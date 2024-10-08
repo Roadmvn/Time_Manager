@@ -1,132 +1,96 @@
-# Tutoriel : Configuration des Routes et Contrôleurs pour Time Manager
-
-Ce tutoriel explique les modifications apportées aux routes et aux contrôleurs pour le projet Time Manager.
-
-## 1. Configuration des Routes
-
-Dans le fichier `lib/time_manager_web/router.ex`, nous avons ajouté un nouveau scope pour les routes API :
-
-
-elixir
-scope "/api", TimeManagerWeb do
-pipe_through :api
-# User routes
-get "/users", UserController, :index
-get "/users/:id", UserController, :show
-post "/users", UserController, :create
-put "/users/:id", UserController, :update
-delete "/users/:id", UserController, :delete
-# WorkingTime routes
-get "/workingtime/:user_id", WorkingTimeController, :index
-get "/workingtime/:user_id/:id", WorkingTimeController, :show
-post "/workingtime/:user_id", WorkingTimeController, :create
-put "/workingtime/:id", WorkingTimeController, :update
-delete "/workingtime/:id", WorkingTimeController, :delete
-# Clock routes
-get "/clocks/:user_id", ClockController, :index
-post "/clocks/:user_id", ClockController, :create
-end
-Ces routes définissent les endpoints API pour les utilisateurs, les temps de travail et les horloges.
-
-## 2. Modification des Contrôleurs
-
-### UserController
-
-Dans `lib/time_manager_web/controllers/user_controller.ex`, nous avons modifié la fonction `index` pour prendre en compte les paramètres email et username :
-elixir
-def index(conn, %{"email" => email, "username" => username}) do
-users = Accounts.list_users(email, username)
-render(conn, :index, users: users)
-end
-
-
-### WorkingTimeController
-
-Dans `lib/time_manager_web/controllers/working_time_controller.ex`, nous avons ajouté des fonctions pour gérer les temps de travail :
-
-
-elixir
-def index(conn, %{"user_id" => user_id, "start" => start, "end" => end_time}) do
-workingtimes = Times.list_workingtimes(user_id, start, end_time)
-render(conn, :index, workingtimes: workingtimes)
-end
-def show(conn, %{"user_id" => user_id, "id" => id}) do
-working_time = Times.get_working_time!(id, user_id)
-render(conn, :show, working_time: working_time)
-end
-def create(conn, %{"user_id" => user_id, "working_time" => working_time_params}) do
-with {:ok, %WorkingTime{} = working_time} <- Times.create_working_time(user_id, working_time_params) do
-conn
-|> put_status(:created)
-|> put_resp_header("location", ~p"/api/workingtime/#{user_id}/#{working_time.id}")
-|> render(:show, working_time: working_time)
-end
-end
-
-### ClockController
-
-Dans `lib/time_manager_web/controllers/clock_controller.ex`, nous avons ajouté des fonctions pour gérer les horloges :
-
-
-elixir
-def index(conn, %{"user_id" => user_id}) do
-clocks = Times.list_clocks(user_id)
-render(conn, :index, clocks: clocks)
-end
-def create(conn, %{"user_id" => user_id, "clock" => clock_params}) do
-with {:ok, %Clock{} = clock} <- Times.create_clock(user_id, clock_params) do
-conn
-|> put_status(:created)
-|> put_resp_header("location", ~p"/api/clocks/#{user_id}")
-|> render(:show, clock: clock)
-end
-end
-bash
-mix phx.routes
-Ce tutoriel mis à jour explique en détail les modifications apportées aux routes et aux contrôleurs, et fournit des instructions pour les étapes suivantes du développement.
-
-elixir
-def index(conn, %{"user_id" => user_id}) do
-clocks = Times.list_clocks(user_id)
-render(conn, :index, clocks: clocks)
-end
-def create(conn, %{"user_id" => user_id, "clock" => clock_params}) do
-with {:ok, %Clock{} = clock} <- Times.create_clock(user_id, clock_params) do
-conn
-|> put_status(:created)
-|> put_resp_header("location", ~p"/api/clocks/#{user_id}")
-|> render(:show, clock: clock)
-end
-end
-
-
-
-Ces modifications permettent de gérer les requêtes API pour les utilisateurs, les temps de travail et les horloges, conformément aux spécifications du projet Time Manager.
-
-## 3. Vérification des Routes
-
-Pour vérifier que toutes les routes ont été correctement configurées, vous pouvez utiliser la commande suivante dans votre terminal :
-
-bash
-mix phx.routes
-
-
-Cette commande affichera toutes les routes disponibles dans votre application, y compris les nouvelles routes API que nous venons de configurer.
-
-## 4. Prochaines étapes
-
-Après avoir configuré ces routes et contrôleurs, assurez-vous de :
-
-1. Implémenter les fonctions correspondantes dans vos modules `Accounts` et `Times` (par exemple, `list_users/2`, `list_workingtimes/3`, `create_clock/2`, etc.).
-2. Créer les vues JSON appropriées pour chaque contrôleur.
-3. Tester chaque endpoint à l'aide d'un outil comme Postman pour vous assurer qu'ils fonctionnent comme prévu.
-
-N'oubliez pas de gérer les cas d'erreur et d'ajouter des validations appropriées dans vos changeset et vos contrôleurs.
-
-
-
         modified:   time_manager/lib/time_manager_web/controllers/clock_controller.ex
         modified:   time_manager/lib/time_manager_web/controllers/user_controller.ex
         modified:   time_manager/lib/time_manager_web/controllers/working_time_controller.ex
         modified:   time_manager/lib/time_manager_web/router.ex
         new file:   time_manager/tuto.routes.md
+
+
+    elixir
+
+scope "/api", TimeManagerWeb do
+pipe_through :api
+
+# User routes
+
+get "/users", UserController, :index
+get "/users/:id", UserController, :show
+post "/users", UserController, :create
+put "/users/:id", UserController, :update
+delete "/users/:id", UserController, :delete
+
+# WorkingTime routes
+
+get "/workingtime/:user_id", WorkingTimeController, :index
+get "/workingtime/:user_id/:id", WorkingTimeController, :show
+post "/workingtime/:user_id", WorkingTimeController, :create
+put "/workingtime/:id", WorkingTimeController, :update
+delete "/workingtime/:id", WorkingTimeController, :delete
+
+# Clock routes
+
+get "/clocks/:user_id", ClockController, :index
+post "/clocks/:user_id", ClockController, :create
+end
+
+Ces routes définissent les endpoints API pour les utilisateurs, les temps de travail et les horloges.
+
+### 2. Modification des contrôleurs
+
+#### UserController
+
+Dans `lib/time_manager_web/controllers/user_controller.ex`, nous avons modifié la fonction `index` pour prendre en compte les paramètres email et username :
+
+elixir
+def index(conn, params) do
+users = Accounts.list_users(params["email"], params["username"])
+render(conn, :index, users: users)
+end
+
+#### WorkingTimeController
+
+Dans `lib/time_manager_web/controllers/working_time_controller.ex`, nous avons ajouté des fonctions pour gérer les temps de travail, notamment :
+
+- `index/2` : Liste les temps de travail pour un utilisateur donné, avec filtrage optionnel par date.
+- `show/2` : Affiche un temps de travail spécifique.
+- `create/2` : Crée un nouveau temps de travail.
+- `update/2` : Met à jour un temps de travail existant.
+- `delete/2` : Supprime un temps de travail.
+
+#### ClockController
+
+Dans `lib/time_manager_web/controllers/clock_controller.ex`, nous avons ajouté des fonctions pour gérer les horloges :
+
+- `index/2` : Liste les horloges pour un utilisateur donné.
+- `create/2` : Crée une nouvelle entrée d'horloge.
+
+### 3. Modification du contexte Times
+
+Dans `lib/time_manager/times.ex`, nous avons ajouté et modifié plusieurs fonctions pour supporter les nouvelles fonctionnalités :
+
+- `list_workingtimes/3` : Cette fonction a été modifiée pour accepter des paramètres de filtrage par date.
+- `filter_by_date_range/3` : Une nouvelle fonction privée pour filtrer les temps de travail par plage de dates.
+
+### 4. Prochaines étapes
+
+Après ces modifications, assurez-vous de :
+
+1. Tester chaque endpoint API pour vérifier son bon fonctionnement.
+2. Mettre à jour la documentation API si nécessaire.
+3. Implémenter la gestion des erreurs et les validations appropriées.
+4. Considérer l'ajout de tests pour les nouvelles fonctionnalités.
+
+### 5. Comment tester les nouvelles routes
+
+Vous pouvez utiliser des outils comme Postman ou cURL pour tester les nouvelles routes API. Par exemple :
+
+bash
+Lister les utilisateurs
+curl http://localhost:4000/api/users
+Créer un nouveau temps de travail
+curl -X POST http://localhost:4000/api/workingtime/1 \
+-H "Content-Type: application/json" \
+-d '{"start": "2023-10-25T09:00:00", "end": "2023-10-25T17:00:00"}'
+Lister les horloges d'un utilisateur
+curl http://localhost:4000/api/clocks/1
+
+N'oubliez pas de remplacer les IDs et les données selon vos besoins spécifiques.

@@ -87,3 +87,11 @@ Si vous rencontrez des problèmes lors de la migration ou du démarrage du serve
 8. `mix phx.server` - Pour démarrer le serveur Phoenix.
 
 Ces étapes devraient résoudre les problèmes de migration en double et permettre le démarrage correct du serveur.
+
+## Modifications récentes et configuration de l'API
+
+Nous avons récemment apporté des modifications importantes à notre projet Time Manager pour configurer l'API RESTful. Voici un résumé détaillé des changements :
+
+### 1. Configuration des routes API
+
+Dans le fichier `lib/time_manager_web/router.ex`, nous avons ajouté un nouveau scope pour les routes API :

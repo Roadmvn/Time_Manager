@@ -113,8 +113,25 @@ defmodule TimeManager.Times do
       [%WorkingTime{}, ...]
 
   """
-  def list_workingtimes do
-    Repo.all(WorkingTime)
+  def list_workingtimes(user_id, start \\ nil, end_time \\ nil) do
+    WorkingTime
+    |> where([w], w.user_id == ^user_id)
+    |> filter_by_date_range(start, end_time)
+    |> Repo.all()
+  end
+
+  defp filter_by_date_range(query, nil, nil), do: query
+  defp filter_by_date_range(query, start, nil) do
+    query
+    |> where([w], w.start >= ^start)
+  end
+  defp filter_by_date_range(query, nil, end_time) do
+    query
+    |> where([w], w.end <= ^end_time)
+  end
+  defp filter_by_date_range(query, start, end_time) do
+    query
+    |> where([w], w.start >= ^start and w.end <= ^end_time)
   end
 
   @doc """

@@ -6,7 +6,9 @@ defmodule TimeManagerWeb.WorkingTimeController do
 
   action_fallback TimeManagerWeb.FallbackController
 
-  def index(conn, %{"user_id" => user_id, "start" => start, "end" => end_time}) do
+  def index(conn, %{"user_id" => user_id} = params) do
+    start = params["start"]
+    end_time = params["end"]
     workingtimes = Times.list_workingtimes(user_id, start, end_time)
     render(conn, :index, workingtimes: workingtimes)
   end
