@@ -62,5 +62,11 @@ defmodule TimeManagerWeb.Router do
     # Clock routes
     get "/clocks/:user_id", ClockController, :index
     post "/clocks/:user_id", ClockController, :create
+
+    # Tasks routes
+    get "/tasks/:id", TaskController, :show
+    post "/tasks", TaskController, :create
+    put "/tasks/:id", TaskController, :update
+    delete "/tasks/:id", TaskController, :delete
   end
 end
