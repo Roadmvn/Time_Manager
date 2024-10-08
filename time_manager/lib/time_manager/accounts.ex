@@ -17,9 +17,18 @@ defmodule TimeManager.Accounts do
       [%User{}, ...]
 
   """
-  def list_users do
-    Repo.all(User)
+  def list_users(email \\ nil, username \\ nil) do
+    User
+    |> filter_by_email(email)
+    |> filter_by_username(username)
+    |> Repo.all()
   end
+
+  defp filter_by_email(query, nil), do: query
+  defp filter_by_email(query, email), do: where(query, [u], u.email == ^email)
+
+  defp filter_by_username(query, nil), do: query
+  defp filter_by_username(query, username), do: where(query, [u], u.username == ^username)
 
   @doc """
   Gets a single user.

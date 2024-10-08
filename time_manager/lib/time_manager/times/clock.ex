@@ -5,7 +5,7 @@ defmodule TimeManager.Times.Clock do
   schema "clocks" do
     field :status, :boolean, default: false
     field :time, :naive_datetime
-    belongs_to :user, TimeManager.Accounts.User
+    field :user_id, :id
 
     timestamps(type: :utc_datetime)
   end

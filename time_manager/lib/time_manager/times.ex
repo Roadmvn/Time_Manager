@@ -113,25 +113,8 @@ defmodule TimeManager.Times do
       [%WorkingTime{}, ...]
 
   """
-  def list_workingtimes(user_id, start \\ nil, end_time \\ nil) do
-    WorkingTime
-    |> where([w], w.user_id == ^user_id)
-    |> filter_by_date_range(start, end_time)
-    |> Repo.all()
-  end
-
-  defp filter_by_date_range(query, nil, nil), do: query
-  defp filter_by_date_range(query, start, nil) do
-    query
-    |> where([w], w.start >= ^start)
-  end
-  defp filter_by_date_range(query, nil, end_time) do
-    query
-    |> where([w], w.end <= ^end_time)
-  end
-  defp filter_by_date_range(query, start, end_time) do
-    query
-    |> where([w], w.start >= ^start and w.end <= ^end_time)
+  def list_workingtimes do
+    Repo.all(WorkingTime)
   end
 
   @doc """
@@ -162,7 +145,8 @@ defmodule TimeManager.Times do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_working_time(attrs \\ %{}) do
+  def create_working_time(user_id, attrs \\ %{}) do
+    attrs = Map.put(attrs, "user_id", user_id)
     %WorkingTime{}
     |> WorkingTime.changeset(attrs)
     |> Repo.insert()
@@ -213,5 +197,35 @@ defmodule TimeManager.Times do
   """
   def change_working_time(%WorkingTime{} = working_time, attrs \\ %{}) do
     WorkingTime.changeset(working_time, attrs)
+  end
+
+  def list_clocks(user_id) do
+    Clock
+    |> where([c], c.user_id == ^user_id)
+    |> Repo.all()
+  end
+
+  def list_workingtimes(user_id, start \\ nil, end_time \\ nil) do
+    WorkingTime
+    |> where([w], w.user_id == ^user_id)
+    |> filter_by_date_range(start, end_time)
+    |> Repo.all()
+  end
+
+  defp filter_by_date_range(query, nil, nil), do: query
+  defp filter_by_date_range(query, start, nil) do
+    query |> where([w], w.start >= ^start)
+  end
+  defp filter_by_date_range(query, nil, end_time) do
+    query |> where([w], w.end <= ^end_time)
+  end
+  defp filter_by_date_range(query, start, end_time) do
+    query |> where([w], w.start >= ^start and w.end <= ^end_time)
+  end
+
+  def get_working_time!(id, user_id) do
+    WorkingTime
+    |> where([w], w.id == ^id and w.user_id == ^user_id)
+    |> Repo.one!()
   end
 end

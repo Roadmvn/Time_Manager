@@ -3,9 +3,9 @@ defmodule TimeManager.Times.WorkingTime do
   import Ecto.Changeset
 
   schema "workingtimes" do
-    field :start, :naive_datetime
     field :end, :naive_datetime
-    belongs_to :user, TimeManager.Accounts.User
+    field :start, :naive_datetime
+    field :user_id, :id
 
     timestamps(type: :utc_datetime)
   end
