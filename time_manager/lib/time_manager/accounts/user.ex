@@ -3,12 +3,10 @@ defmodule TimeManager.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :email, :string
     field :username, :string
-    has_many :clocks, TimeManager.Times.Clock
-    has_many :workingtimes, TimeManager.Times.WorkingTime
+    field :email, :string
 
-    timestamps(type: :utc_datetime)
+    timestamps()
   end
 
   @doc false

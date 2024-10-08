@@ -84,7 +84,9 @@ Si vous rencontrez des problèmes lors de la migration ou du démarrage du serve
 
 7. `mix ecto.migrate` - Pour appliquer les migrations sans conflits.
 
-8. `mix phx.server` - Pour démarrer le serveur Phoenix.
+8. `mix phx.routes` - Pour vérifier les routes disponibles.
+
+9. `mix phx.server` - Pour démarrer le serveur Phoenix.
 
 Ces étapes devraient résoudre les problèmes de migration en double et permettre le démarrage correct du serveur.
 
