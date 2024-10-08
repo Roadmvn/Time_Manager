@@ -122,3 +122,11 @@ Après avoir configuré ces routes et contrôleurs, assurez-vous de :
 3. Tester chaque endpoint à l'aide d'un outil comme Postman pour vous assurer qu'ils fonctionnent comme prévu.
 
 N'oubliez pas de gérer les cas d'erreur et d'ajouter des validations appropriées dans vos changeset et vos contrôleurs.
+
+
+
+        modified:   time_manager/lib/time_manager_web/controllers/clock_controller.ex
+        modified:   time_manager/lib/time_manager_web/controllers/user_controller.ex
+        modified:   time_manager/lib/time_manager_web/controllers/working_time_controller.ex
+        modified:   time_manager/lib/time_manager_web/router.ex
+        new file:   time_manager/tuto.routes.md
