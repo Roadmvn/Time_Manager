@@ -1,5 +1,7 @@
 {application,phoenix_html,
-             [{applications,[kernel,stdlib,elixir,eex,logger]},
+             [{config_mtime,1728463647},
+              {optional_applications,[]},
+              {applications,[kernel,stdlib,elixir,eex,logger]},
               {description,"Phoenix view functions for working with HTML templates"},
               {modules,['Elixir.Phoenix.HTML','Elixir.Phoenix.HTML.Engine',
                         'Elixir.Phoenix.HTML.Form',

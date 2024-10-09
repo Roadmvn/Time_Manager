@@ -1,7 +1,7 @@
 <template>
   <div class="user-manager bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 max-w-4xl mx-auto">
     <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white border-b pb-2">Gestion des utilisateurs</h2>
-    
+
     <!-- Liste des utilisateurs -->
     <ul class="mb-6 space-y-3">
       <li v-for="user in users" :key="user.id" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md shadow flex items-center justify-between transition-all duration-300 hover:shadow-md">
@@ -63,8 +63,8 @@
 
 <script>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
 import { EditIcon, TrashIcon, UserPlusIcon, RefreshCwIcon } from 'lucide-vue-next'
+import { http } from '@/api/network/axios'
 
 export default {
   name: 'UserManager',
@@ -85,7 +85,7 @@ export default {
 
     async function getUsers() {
       try {
-        const response = await axios.get('/api/users')
+        const response = await http.get('/users')
         users.value = response.data
       } catch (error) {
         console.error('Erreur lors de la récupération des utilisateurs:', error)
@@ -94,9 +94,10 @@ export default {
 
     async function createUser() {
       try {
-        await axios.post('/api/users', currentUser.value)
+        await http.post('/users', {"user": currentUser.value})
         await getUsers()
-        currentUser.value = { username: '', email: '' }
+        currentUser.value.username = "";
+		currentUser.value.email = "";
       } catch (error) {
         console.error('Erreur lors de la création de l\'utilisateur:', error)
       }
@@ -104,7 +105,7 @@ export default {
 
     async function updateUser() {
       try {
-        await axios.put(`/api/users/${currentUser.value.id}`, currentUser.value)
+        await http.put(`/users/${currentUser.value.id}`, currentUser.value)
         await getUsers()
         currentUser.value = { username: '', email: '' }
         isEditing.value = false
@@ -115,7 +116,7 @@ export default {
 
     async function deleteUser(id) {
       try {
-        await axios.delete(`/api/users/${id}`)
+        await http.delete(`/users/${id}`)
         await getUsers()
       } catch (error) {
         console.error('Erreur lors de la suppression de l\'utilisateur:', error)

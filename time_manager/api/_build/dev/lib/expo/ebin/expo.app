@@ -1,5 +1,7 @@
 {application,expo,
-             [{applications,[kernel,stdlib,elixir]},
+             [{config_mtime,1728463647},
+              {optional_applications,[]},
+              {applications,[kernel,stdlib,elixir]},
               {description,"Low-level Gettext file handling (.po/.pot/.mo file writer and parser)."},
               {modules,['Elixir.Expo.MO','Elixir.Expo.MO.Composer',
                         'Elixir.Expo.MO.InvalidFileError',
