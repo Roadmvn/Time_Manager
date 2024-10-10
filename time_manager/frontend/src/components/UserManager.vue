@@ -3,7 +3,7 @@
     <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white border-b pb-2">Gestion des utilisateurs</h2>
 
     <!-- Liste des utilisateurs -->
-    <ul class="mb-6 space-y-3">
+    <ul class="mb-6 space-y-3" v-if="users.length > 0">
       <li v-for="user in users" :key="user.id" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md shadow flex items-center justify-between transition-all duration-300 hover:shadow-md">
         <div>
           <span class="font-medium text-gray-700 dark:text-gray-200">{{ user.username }}</span>
@@ -86,7 +86,7 @@ export default {
     async function getUsers() {
       try {
         const response = await http.get('/users')
-        users.value = response.data
+        users.value = response.data.data
       } catch (error) {
         console.error('Erreur lors de la récupération des utilisateurs:', error)
       }
@@ -105,7 +105,7 @@ export default {
 
     async function updateUser() {
       try {
-        await http.put(`/users/${currentUser.value.id}`, currentUser.value)
+        await http.put(`/users/${currentUser.value.id}`, {"user": {"username": currentUser.value.username, "email": currentUser.value.email} })
         await getUsers()
         currentUser.value = { username: '', email: '' }
         isEditing.value = false

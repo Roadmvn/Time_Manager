@@ -61,8 +61,8 @@
 
 <script>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
 import { EditIcon, TrashIcon, PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
+import { http } from '@/api/network/axios'
 
 export default {
   name: 'WorkingTimes',
@@ -84,7 +84,7 @@ export default {
 
     async function getWorkingTimes() {
       try {
-        const response = await axios.get(`/api/workingTimes/${userId.value}`)
+        const response = await http.get(`/workingTimes/${userId.value}`)
         workingTimes.value = response.data
       } catch (error) {
         console.error('Erreur lors de la récupération des heures de travail:', error)
@@ -93,7 +93,7 @@ export default {
 
     async function createWorkingTime() {
       try {
-        await axios.post(`/api/workingTimes/${userId.value}`, currentWorkingTime.value)
+        await http.post(`/workingTimes/${userId.value}`, currentWorkingTime.value)
         await getWorkingTimes()
         currentWorkingTime.value = { start: '', end: '' }
       } catch (error) {
@@ -103,7 +103,7 @@ export default {
 
     async function updateWorkingTime() {
       try {
-        await axios.put(`/api/workingTimes/${userId.value}/${currentWorkingTime.value.id}`, currentWorkingTime.value)
+        await http.put(`/workingTimes/${userId.value}/${currentWorkingTime.value.id}`, currentWorkingTime.value)
         await getWorkingTimes()
         currentWorkingTime.value = { start: '', end: '' }
         isEditing.value = false
@@ -114,7 +114,7 @@ export default {
 
     async function deleteWorkingTime(id) {
       try {
-        await axios.delete(`/api/workingTimes/${userId.value}/${id}`)
+        await http.delete(`/workingTimes/${userId.value}/${id}`)
         await getWorkingTimes()
       } catch (error) {
         console.error('Erreur lors de la suppression des heures de travail:', error)
