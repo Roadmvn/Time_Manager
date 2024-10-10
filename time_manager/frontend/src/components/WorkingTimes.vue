@@ -114,8 +114,8 @@ export default {
     async function getUsers() {
       try {
         const response = await http.get('/users')
-        users.value = response.data.data // Assurez-vous que c'est le bon chemin pour accéder aux données des utilisateurs
-        console.log('Utilisateurs récupérés:', users.value) // Pour le débogage
+        users.value = response.data.data
+        console.log('Utilisateurs récupérés:', users.value)
       } catch (error) {
         console.error('Erreur lors de la récupération des utilisateurs:', error)
       }
@@ -124,9 +124,9 @@ export default {
     async function getWorkingTimes() {
       if (!selectedUserId.value) return
       try {
-        const response = await http.get(`/workingTimes/${selectedUserId.value}`)
+        const response = await http.get(`/workingtime/${selectedUserId.value}`)
         workingTimes.value = response.data.data
-        console.log('Heures de travail récupérées:', workingTimes.value) // Pour le débogage
+        console.log('Heures de travail récupérées:', workingTimes.value)
       } catch (error) {
         console.error('Erreur lors de la récupération des heures de travail:', error)
       }
@@ -135,10 +135,17 @@ export default {
     async function createWorkingTime() {
       if (!selectedUserId.value) return
       try {
-        const response = await http.post(`/workingTimes/${selectedUserId.value}`, currentWorkingTime.value)
-        const newWorkingTime = response.data.data // Assurez-vous que c'est le bon chemin pour accéder aux données
-        workingTimes.value.push(newWorkingTime) // Ajoute la nouvelle plage horaire à la liste existante
-        currentWorkingTime.value = { start: '', end: '' } // Réinitialise le formulaire
+        const response = await http.post(`/workingtime`,
+			{"working_time":
+				{
+					"end": new Date(currentWorkingTime.value.end).toISOString(),
+					"start": new Date(currentWorkingTime.value.start).toISOString(),
+					"user_id": selectedUserId.value
+				}
+			})
+        const newWorkingTime = response.data.data
+        workingTimes.value.push(newWorkingTime)
+        currentWorkingTime.value = { start: '', end: '' }
       } catch (error) {
         console.error('Erreur lors de la création des heures de travail:', error)
       }
@@ -151,7 +158,7 @@ export default {
         const updatedWorkingTime = response.data.data // Assurez-vous que c'est le bon chemin pour accéder aux données
         const index = workingTimes.value.findIndex(wt => wt.id === updatedWorkingTime.id)
         if (index !== -1) {
-          workingTimes.value[index] = updatedWorkingTime // Met à jour la plage horaire dans la liste
+          workingTimes.value[index] = updatedWorkingTime
         }
         currentWorkingTime.value = { start: '', end: '' }
         isEditing.value = false
@@ -164,7 +171,7 @@ export default {
       if (!selectedUserId.value) return
       try {
         await http.delete(`/workingTimes/${selectedUserId.value}/${id}`)
-        workingTimes.value = workingTimes.value.filter(wt => wt.id !== id) // Supprime la plage horaire de la liste
+        workingTimes.value = workingTimes.value.filter(wt => wt.id !== id)
       } catch (error) {
         console.error('Erreur lors de la suppression des heures de travail:', error)
       }
