@@ -138,8 +138,8 @@ export default {
         const response = await http.post(`/workingtime`,
 			{"working_time":
 				{
-					"end": new Date(currentWorkingTime.value.end).toISOString(),
-					"start": new Date(currentWorkingTime.value.start).toISOString(),
+					"end": currentWorkingTime.value.end,
+					"start": currentWorkingTime.value.start,
 					"user_id": selectedUserId.value
 				}
 			})
