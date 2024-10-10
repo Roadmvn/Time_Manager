@@ -125,7 +125,7 @@ export default {
       if (!selectedUserId.value) return
       try {
         const response = await http.get(`/workingTimes/${selectedUserId.value}`)
-        workingTimes.value = response.data.data // Assurez-vous que c'est le bon chemin pour accéder aux données
+        workingTimes.value = response.data.data
         console.log('Heures de travail récupérées:', workingTimes.value) // Pour le débogage
       } catch (error) {
         console.error('Erreur lors de la récupération des heures de travail:', error)
