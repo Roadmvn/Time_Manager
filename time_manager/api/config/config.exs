@@ -62,7 +62,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 config :cors_plug,
-  origin: ["http://localhost:8080"],
+  origin: ["http://localhost:8080", "http://localhost:8081"],
   max_age: 86400,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
 
