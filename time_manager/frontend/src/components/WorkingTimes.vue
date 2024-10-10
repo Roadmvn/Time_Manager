@@ -2,27 +2,24 @@
   <div class="working-times bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 max-w-4xl mx-auto">
     <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white border-b pb-2">Heures de travail</h2>
 
-    <!-- Liste des heures de travail -->
-    <ul class="mb-6 space-y-3">
-      <li v-for="time in workingTimes" :key="time.id" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md shadow flex items-center justify-between transition-all duration-300 hover:shadow-md">
-        <span class="text-gray-700 dark:text-gray-200">
-          {{ formatDate(time.start) }} - {{ formatDate(time.end) }}
-        </span>
-        <div class="space-x-2">
-          <button @click="editWorkingTime(time)" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-            <EditIcon class="w-4 h-4 inline-block mr-1" />
-            Modifier
-          </button>
-          <button @click="deleteWorkingTime(time.id)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-            <TrashIcon class="w-4 h-4 inline-block mr-1" />
-            Supprimer
-          </button>
-        </div>
-      </li>
-    </ul>
+    <!-- Sélecteur d'utilisateur -->
+    <div class="mb-6">
+      <label for="user-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sélectionner un utilisateur</label>
+      <select
+        id="user-select"
+        v-model="selectedUserId"
+        @change="getWorkingTimes"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      >
+        <option value="">Sélectionner un utilisateur</option>
+        <option v-for="user in users" :key="user.id" :value="user.id">
+          {{ user.username }} ({{ user.email }})
+        </option>
+      </select>
+    </div>
 
     <!-- Formulaire pour ajouter/modifier des heures de travail -->
-    <form @submit.prevent="submitWorkingTime" class="space-y-4">
+    <form @submit.prevent="submitWorkingTime" class="space-y-4 mb-6">
       <div class="flex flex-wrap -mx-2">
         <div class="w-full md:w-1/2 px-2 mb-4 md:mb-0">
           <label for="start-time" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Heure de début</label>
@@ -56,11 +53,34 @@
         </button>
       </div>
     </form>
+
+    <!-- Liste des heures de travail -->
+    <div v-if="selectedUserId">
+      <h3 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Plages horaires de travail</h3>
+      <ul class="space-y-3">
+        <li v-for="time in workingTimes" :key="time.id" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md shadow flex items-center justify-between transition-all duration-300 hover:shadow-md">
+          <span class="text-gray-700 dark:text-gray-200">
+            {{ formatDate(time.start) }} - {{ formatDate(time.end) }}
+          </span>
+          <div class="space-x-2">
+            <button @click="editWorkingTime(time)" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+              <EditIcon class="w-4 h-4 inline-block mr-1" />
+              Modifier
+            </button>
+            <button @click="deleteWorkingTime(time.id)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+              <TrashIcon class="w-4 h-4 inline-block mr-1" />
+              Supprimer
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <p v-else class="text-gray-500 dark:text-gray-400 text-center mt-4">Veuillez sélectionner un utilisateur pour voir ses plages horaires de travail.</p>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { EditIcon, TrashIcon, PlusIcon, RefreshCwIcon } from 'lucide-vue-next'
 import { http } from '@/api/network/axios'
 
@@ -76,35 +96,63 @@ export default {
     const workingTimes = ref([])
     const currentWorkingTime = ref({ start: '', end: '' })
     const isEditing = ref(false)
-    const userId = ref(1) // À remplacer par l'ID de l'utilisateur connecté
+    const users = ref([])
+    const selectedUserId = ref('')
 
     onMounted(() => {
-      getWorkingTimes()
+      getUsers()
     })
 
-    async function getWorkingTimes() {
+    watch(selectedUserId, (newValue) => {
+      if (newValue) {
+        getWorkingTimes()
+      } else {
+        workingTimes.value = []
+      }
+    })
+
+    async function getUsers() {
       try {
-        const response = await http.get(`/workingTimes/${userId.value}`)
-        workingTimes.value = response.data
+        const response = await http.get('/users')
+        users.value = response.data.data // Assurez-vous que c'est le bon chemin pour accéder aux données des utilisateurs
+        console.log('Utilisateurs récupérés:', users.value) // Pour le débogage
+      } catch (error) {
+        console.error('Erreur lors de la récupération des utilisateurs:', error)
+      }
+    }
+
+    async function getWorkingTimes() {
+      if (!selectedUserId.value) return
+      try {
+        const response = await http.get(`/workingTimes/${selectedUserId.value}`)
+        workingTimes.value = response.data.data // Assurez-vous que c'est le bon chemin pour accéder aux données
+        console.log('Heures de travail récupérées:', workingTimes.value) // Pour le débogage
       } catch (error) {
         console.error('Erreur lors de la récupération des heures de travail:', error)
       }
     }
 
     async function createWorkingTime() {
+      if (!selectedUserId.value) return
       try {
-        await http.post(`/workingTimes/${userId.value}`, currentWorkingTime.value)
-        await getWorkingTimes()
-        currentWorkingTime.value = { start: '', end: '' }
+        const response = await http.post(`/workingTimes/${selectedUserId.value}`, currentWorkingTime.value)
+        const newWorkingTime = response.data.data // Assurez-vous que c'est le bon chemin pour accéder aux données
+        workingTimes.value.push(newWorkingTime) // Ajoute la nouvelle plage horaire à la liste existante
+        currentWorkingTime.value = { start: '', end: '' } // Réinitialise le formulaire
       } catch (error) {
         console.error('Erreur lors de la création des heures de travail:', error)
       }
     }
 
     async function updateWorkingTime() {
+      if (!selectedUserId.value) return
       try {
-        await http.put(`/workingTimes/${userId.value}/${currentWorkingTime.value.id}`, currentWorkingTime.value)
-        await getWorkingTimes()
+        const response = await http.put(`/workingTimes/${selectedUserId.value}/${currentWorkingTime.value.id}`, currentWorkingTime.value)
+        const updatedWorkingTime = response.data.data // Assurez-vous que c'est le bon chemin pour accéder aux données
+        const index = workingTimes.value.findIndex(wt => wt.id === updatedWorkingTime.id)
+        if (index !== -1) {
+          workingTimes.value[index] = updatedWorkingTime // Met à jour la plage horaire dans la liste
+        }
         currentWorkingTime.value = { start: '', end: '' }
         isEditing.value = false
       } catch (error) {
@@ -113,9 +161,10 @@ export default {
     }
 
     async function deleteWorkingTime(id) {
+      if (!selectedUserId.value) return
       try {
-        await http.delete(`/workingTimes/${userId.value}/${id}`)
-        await getWorkingTimes()
+        await http.delete(`/workingTimes/${selectedUserId.value}/${id}`)
+        workingTimes.value = workingTimes.value.filter(wt => wt.id !== id) // Supprime la plage horaire de la liste
       } catch (error) {
         console.error('Erreur lors de la suppression des heures de travail:', error)
       }
@@ -142,6 +191,9 @@ export default {
       workingTimes,
       currentWorkingTime,
       isEditing,
+      users,
+      selectedUserId,
+      getUsers,
       getWorkingTimes,
       createWorkingTime,
       updateWorkingTime,
