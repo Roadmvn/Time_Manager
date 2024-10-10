@@ -1,7 +1,5 @@
 {application,mint,
-             [{config_mtime,1728463647},
-              {optional_applications,[castore]},
-              {applications,[kernel,stdlib,elixir,logger,ssl,castore,hpax]},
+             [{applications,[kernel,stdlib,elixir,logger,ssl,hpax]},
               {description,"Small and composable HTTP client."},
               {modules,['Elixir.Mint.Application','Elixir.Mint.Core.Conn',
                         'Elixir.Mint.Core.Headers',

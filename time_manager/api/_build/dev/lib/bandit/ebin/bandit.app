@@ -1,7 +1,5 @@
 {application,bandit,
-             [{config_mtime,1728463647},
-              {optional_applications,[]},
-              {applications,[kernel,stdlib,elixir,logger,thousand_island,plug,
+             [{applications,[kernel,stdlib,elixir,logger,thousand_island,plug,
                              websock,hpax,telemetry]},
               {description,"A pure-Elixir HTTP server built for Plug & WebSock apps"},
               {modules,['Elixir.Bandit','Elixir.Bandit.Adapter',

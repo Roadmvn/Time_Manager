@@ -1,7 +1,5 @@
 {application,castore,
-             [{config_mtime,1728463647},
-              {optional_applications,[]},
-              {applications,[kernel,stdlib,elixir,logger]},
+             [{applications,[kernel,stdlib,elixir,logger]},
               {description,"Up-to-date CA certificate store."},
               {modules,['Elixir.CAStore']},
               {registered,[]},

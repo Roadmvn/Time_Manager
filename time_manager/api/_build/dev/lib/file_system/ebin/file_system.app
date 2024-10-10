@@ -1,7 +1,5 @@
 {application,file_system,
-             [{config_mtime,1728463647},
-              {optional_applications,[]},
-              {applications,[kernel,stdlib,elixir,logger]},
+             [{applications,[kernel,stdlib,elixir,logger]},
               {description,"An Elixir file system change watcher wrapper based on FS, the native file\nsystem listener.\n"},
               {modules,['Elixir.FileSystem','Elixir.FileSystem.Backend',
                         'Elixir.FileSystem.Backends.FSInotify',

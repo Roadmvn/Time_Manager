@@ -94,7 +94,7 @@ export default {
 
     async function createUser() {
       try {
-        await http.post('/users', {"user": currentUser.value})
+        await http.post('/users', {"user": currentUser.value}) 
         await getUsers()
         currentUser.value.username = "";
 		currentUser.value.email = "";

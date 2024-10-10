@@ -1,7 +1,5 @@
 {application,phoenix_template,
-             [{config_mtime,1728463647},
-              {optional_applications,[phoenix_html]},
-              {applications,[kernel,stdlib,elixir,eex,phoenix_html]},
+             [{applications,[kernel,stdlib,elixir,eex]},
               {description,"Template rendering for Phoenix"},
               {modules,['Elixir.Phoenix.Template',
                         'Elixir.Phoenix.Template.EExEngine',

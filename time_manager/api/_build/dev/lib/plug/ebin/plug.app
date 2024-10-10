@@ -1,7 +1,5 @@
 {application,plug,
-             [{config_mtime,1728463647},
-              {compile_env,[{plug,[mimes],error},{plug,[statuses],error}]},
-              {optional_applications,[]},
+             [{compile_env,[{plug,[mimes],error},{plug,[statuses],error}]},
               {applications,[kernel,stdlib,elixir,logger,eex,mime,plug_crypto,
                              telemetry]},
               {description,"Compose web applications with functions"},
