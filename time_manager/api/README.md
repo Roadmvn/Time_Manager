@@ -1,24 +1,5 @@
 # TimeManager
 
-To start your Phoenix server:
-
-- Run `mix setup` to install and setup dependencies
-- Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-- Official website: https://www.phoenixframework.org/
-- Guides: https://hexdocs.pm/phoenix/overview.html
-- Docs: https://hexdocs.pm/phoenix
-- Forum: https://elixirforum.com/c/phoenix-forum
-- Source: https://github.com/phoenixframework/phoenix
-
-# TimeManager
-
 Pour démarrer votre serveur Phoenix :
 
 - Exécutez `mix setup` pour installer et configurer les dépendances
@@ -30,13 +11,26 @@ Vous pouvez maintenant visiter [`localhost:4000`](http://localhost:4000) depuis 
 
 Pour configurer la base de données et créer les tables nécessaires, suivez ces étapes :
 
-1. Créez la base de données :
+1. Modifiez les identifiants PostgreSQL :
+
+   Allez dans le fichier `time_manager/api/config/dev.exs` et modifiez les informations de connexion PostgreSQL selon votre configuration :
+
+   ```elixir
+   config :time_manager, TimeManager.Repo,
+     username: "votre_nom_utilisateur",
+     password: "votre_mot_de_passe",
+     hostname: "localhost",
+     database: "time_manager_dev",
+     ...
+   ```
+
+2. Créez la base de données :
 
    ```
    mix ecto.create
    ```
 
-2. Exécutez les migrations pour créer les tables :
+3. Exécutez les migrations pour créer les tables :
    ```
    mix ecto.migrate
    ```

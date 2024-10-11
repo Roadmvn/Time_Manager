@@ -77,5 +77,10 @@ Les contributions sont les bienvenues ! Veuillez suivre ces étapes :
 5. Ouvrez une Pull Request
 
 
+   rm -rf node_modules
+   rm package-lock.json
+   npm install
 
 
+
+   npm install @vue/cli-plugin-babel
