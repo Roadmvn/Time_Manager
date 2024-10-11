@@ -138,8 +138,8 @@ export default {
         const response = await http.post(`/workingtime`,
 			{"working_time":
 				{
-					"end": currentWorkingTime.value.end,
-					"start": currentWorkingTime.value.start,
+					"end": new Date(currentWorkingTime.value.end).toISOString(),
+					"start": new Date(currentWorkingTime.value.start).toISOString(),
 					"user_id": selectedUserId.value
 				}
 			})
@@ -154,8 +154,15 @@ export default {
     async function updateWorkingTime() {
       if (!selectedUserId.value) return
       try {
-        const response = await http.put(`/workingTimes/${selectedUserId.value}/${currentWorkingTime.value.id}`, currentWorkingTime.value)
-        const updatedWorkingTime = response.data.data // Assurez-vous que c'est le bon chemin pour accéder aux données
+        const response = await http.put(`/workingtime/${currentWorkingTime.value.id}`,
+			{
+				"working_time":
+				{
+					"end": new Date(currentWorkingTime.value.end).toISOString(),
+					"start": new Date(currentWorkingTime.value.start).toISOString()
+				}
+			})
+        const updatedWorkingTime = response.data.data;
         const index = workingTimes.value.findIndex(wt => wt.id === updatedWorkingTime.id)
         if (index !== -1) {
           workingTimes.value[index] = updatedWorkingTime
