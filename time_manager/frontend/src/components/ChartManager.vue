@@ -2,7 +2,7 @@
   <div class="chart-manager bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 max-w-4xl mx-auto">
     <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white border-b pb-2">Graphiques - Heures de travail</h2>
 
-   
+    <!-- Sélecteur d'utilisateur -->  
     <div class="mb-6">
       <label for="user-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sélectionner un utilisateur</label>
       <select
@@ -18,7 +18,22 @@
       </select>
     </div>
 
-  
+    
+    <div class="flex flex-wrap gap-4 mb-6">
+      <button
+        v-for="type in chartTypes"
+        :key="type.value"
+        @click="changeChartType(type.value)"
+        :class="[
+          'px-4 py-2 rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2',
+          chartType === type.value ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+        ]"
+      >
+        {{ type.label }}
+      </button>
+    </div>
+
+   
     <div v-if="selectedUserId" class="chart-container bg-gray-50 dark:bg-gray-700 rounded-lg shadow-inner p-4" style="height: 400px;">
       <canvas ref="chartCanvas"></canvas>
     </div>
@@ -40,6 +55,13 @@ export default {
     const chartCanvas = ref(null);
     let chart = null;
 
+    const chartType = ref('bar');
+    const chartTypes = [
+      { value: 'bar', label: 'Barre' },
+      { value: 'line', label: 'Ligne' },
+      { value: 'pie', label: 'Camembert' }
+    ];
+
     const getUsers = async () => {
       try {
         const response = await http.get('/users');
@@ -54,7 +76,6 @@ export default {
       }
     };
 
-    
     const fetchChartData = async () => {
       if (!selectedUserId.value) {
         console.warn('Aucun utilisateur sélectionné.');
@@ -77,7 +98,6 @@ export default {
       }
     };
 
-    
     const processChartData = () => {
       const totalHoursPerDay = {};
 
@@ -98,7 +118,6 @@ export default {
       updateChart(labels, data);
     };
 
-    
     const updateChart = (labels, data) => {
       if (chart) {
         chart.destroy();
@@ -106,15 +125,29 @@ export default {
 
       const ctx = chartCanvas.value.getContext('2d');
       chart = new Chart(ctx, {
-        type: 'bar',
+        type: chartType.value,
         data: {
           labels: labels,
           datasets: [
             {
               label: 'Heures de travail',
               data: data,
-              backgroundColor: 'rgba(54, 162, 235, 0.5)',
-              borderColor: 'rgba(54, 162, 235, 1)',
+              backgroundColor: chartType.value === 'pie' ? [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(255, 206, 86, 0.5)',
+                'rgba(75, 192, 192, 0.5)',
+                'rgba(153, 102, 255, 0.5)',
+                'rgba(255, 159, 64, 0.5)'
+              ] : 'rgba(54, 162, 235, 0.5)',
+              borderColor: chartType.value === 'pie' ? [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+              ] : 'rgba(54, 162, 235, 1)',
               borderWidth: 1,
             },
           ],
@@ -122,7 +155,7 @@ export default {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          scales: {
+          scales: chartType.value === 'pie' ? {} : {
             y: {
               beginAtZero: true,
               title: {
@@ -135,12 +168,17 @@ export default {
       });
     };
 
-    
+    const changeChartType = (type) => {
+      chartType.value = type;
+      if (chartData.value.length) {
+        processChartData();
+      }
+    };
+
     onMounted(() => {
       getUsers();
     });
 
-    
     watch(selectedUserId, () => {
       fetchChartData();
     });
@@ -149,6 +187,9 @@ export default {
       users,
       selectedUserId,
       chartCanvas,
+      chartType,
+      chartTypes,
+      changeChartType,
     };
   },
 };
