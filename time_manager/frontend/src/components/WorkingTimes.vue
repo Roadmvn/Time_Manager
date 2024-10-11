@@ -170,7 +170,7 @@ export default {
     async function deleteWorkingTime(id) {
       if (!selectedUserId.value) return
       try {
-        await http.delete(`/workingTimes/${selectedUserId.value}/${id}`)
+        await http.delete(`/workingtime/${id}`)
         workingTimes.value = workingTimes.value.filter(wt => wt.id !== id)
       } catch (error) {
         console.error('Erreur lors de la suppression des heures de travail:', error)
