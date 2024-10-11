@@ -228,4 +228,11 @@ defmodule TimeManager.Times do
     |> where([w], w.id == ^id and w.user_id == ^user_id)
     |> Repo.one!()
   end
+
+  def get_working_times_by_user!(user_id) do
+    WorkingTime
+    |> where([w], w.user_id == ^user_id)
+    |> Repo.all()
+  end
+
 end

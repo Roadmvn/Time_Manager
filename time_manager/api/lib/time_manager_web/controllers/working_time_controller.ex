@@ -21,9 +21,9 @@ defmodule TimeManagerWeb.WorkingTimeController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    working_time = Times.get_working_time!(id)
-    render(conn, :show, working_time: working_time)
+  def show(conn, %{"user_id" => user_id}) do
+    working_times = Times.get_working_times_by_user!(user_id)
+    render(conn, :index, workingtimes: working_times)
   end
 
   def update(conn, %{"id" => id, "working_time" => working_time_params}) do

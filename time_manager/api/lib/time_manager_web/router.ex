@@ -53,8 +53,8 @@ defmodule TimeManagerWeb.Router do
     delete "/users/:id", UserController, :delete
 
     # WorkingTime routes
-    get "/workingtime/:user_id", WorkingTimeController, :index
-    get "/workingtime/:user_id/:id", WorkingTimeController, :show
+    get "/workingtime", WorkingTimeController, :index
+    get "/workingtime/:user_id", WorkingTimeController, :show
     post "/workingtime", WorkingTimeController, :create
     put "/workingtime/:id", WorkingTimeController, :update
     delete "/workingtime/:id", WorkingTimeController, :delete
