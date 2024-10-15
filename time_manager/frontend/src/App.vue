@@ -77,7 +77,6 @@ export default {
 
     const navItems = [
       { name: 'Utilisateurs', path: '/users', ariaLabel: 'Aller à la page des utilisateurs' },
-      { name: 'Tâches', path: '/tasks', ariaLabel: 'Aller à la page des tâches' },
       { name: 'Heures de travail', path: '/working-times', ariaLabel: 'Aller à la page des heures de travail' },
       { name: 'Graphiques', path: '/charts', ariaLabel: 'Aller à la page des graphiques' },
     ]
