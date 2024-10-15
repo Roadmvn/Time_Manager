@@ -114,4 +114,64 @@ defmodule TimeManager.TimesTest do
       assert %Ecto.Changeset{} = Times.change_working_time(working_time)
     end
   end
+
+  describe "flexible_working_times" do
+    alias TimeManager.Times.FlexibleWorkingTime
+
+    import TimeManager.TimesFixtures
+
+    @invalid_attrs %{end_time: nil, night_hours: nil, overtime_hours: nil, start_time: nil}
+
+    test "list_flexible_working_times/0 returns all flexible_working_times" do
+      flexible_working_time = flexible_working_time_fixture()
+      assert Times.list_flexible_working_times() == [flexible_working_time]
+    end
+
+    test "get_flexible_working_time!/1 returns the flexible_working_time with given id" do
+      flexible_working_time = flexible_working_time_fixture()
+      assert Times.get_flexible_working_time!(flexible_working_time.id) == flexible_working_time
+    end
+
+    test "create_flexible_working_time/1 with valid data creates a flexible_working_time" do
+      valid_attrs = %{end_time: ~U[2024-10-14 20:12:00Z], night_hours: 120.5, overtime_hours: 120.5, start_time: ~U[2024-10-14 20:12:00Z]}
+
+      assert {:ok, %FlexibleWorkingTime{} = flexible_working_time} = Times.create_flexible_working_time(valid_attrs)
+      assert flexible_working_time.end_time == ~U[2024-10-14 20:12:00Z]
+      assert flexible_working_time.night_hours == 120.5
+      assert flexible_working_time.overtime_hours == 120.5
+      assert flexible_working_time.start_time == ~U[2024-10-14 20:12:00Z]
+    end
+
+    test "create_flexible_working_time/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Times.create_flexible_working_time(@invalid_attrs)
+    end
+
+    test "update_flexible_working_time/2 with valid data updates the flexible_working_time" do
+      flexible_working_time = flexible_working_time_fixture()
+      update_attrs = %{end_time: ~U[2024-10-15 20:12:00Z], night_hours: 456.7, overtime_hours: 456.7, start_time: ~U[2024-10-15 20:12:00Z]}
+
+      assert {:ok, %FlexibleWorkingTime{} = flexible_working_time} = Times.update_flexible_working_time(flexible_working_time, update_attrs)
+      assert flexible_working_time.end_time == ~U[2024-10-15 20:12:00Z]
+      assert flexible_working_time.night_hours == 456.7
+      assert flexible_working_time.overtime_hours == 456.7
+      assert flexible_working_time.start_time == ~U[2024-10-15 20:12:00Z]
+    end
+
+    test "update_flexible_working_time/2 with invalid data returns error changeset" do
+      flexible_working_time = flexible_working_time_fixture()
+      assert {:error, %Ecto.Changeset{}} = Times.update_flexible_working_time(flexible_working_time, @invalid_attrs)
+      assert flexible_working_time == Times.get_flexible_working_time!(flexible_working_time.id)
+    end
+
+    test "delete_flexible_working_time/1 deletes the flexible_working_time" do
+      flexible_working_time = flexible_working_time_fixture()
+      assert {:ok, %FlexibleWorkingTime{}} = Times.delete_flexible_working_time(flexible_working_time)
+      assert_raise Ecto.NoResultsError, fn -> Times.get_flexible_working_time!(flexible_working_time.id) end
+    end
+
+    test "change_flexible_working_time/1 returns a flexible_working_time changeset" do
+      flexible_working_time = flexible_working_time_fixture()
+      assert %Ecto.Changeset{} = Times.change_flexible_working_time(flexible_working_time)
+    end
+  end
 end

@@ -12,8 +12,8 @@
               class="md:hidden bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
               :aria-label="isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'"
             >
-              <span v-if="!isMenuOpen">&#9776;</span> <!-- Icône de menu "hamburger" -->
-              <span v-else>&times;</span> <!-- Icône "X" pour fermer -->
+              <span v-if="!isMenuOpen">&#9776;</span>
+              <span v-else>&times;</span>
             </button>
           </div>
           <transition
@@ -61,16 +61,9 @@
 
 <script>
 import { ref, onMounted, onUnmounted } from 'vue'
-// Supprimez cette ligne
-// import { MenuIcon, XIcon } from 'lucide-vue-next'
 
 export default {
   name: 'App',
-  // Supprimez ou commentez ces lignes
-  // components: {
-  //   MenuIcon,
-  //   XIcon
-  // },
   setup() {
     const isMenuOpen = ref(false)
     const isMobile = ref(window.innerWidth < 768)
@@ -79,6 +72,11 @@ export default {
       { name: 'Utilisateurs', path: '/users', ariaLabel: 'Aller à la page des utilisateurs' },
       { name: 'Heures de travail', path: '/working-times', ariaLabel: 'Aller à la page des heures de travail' },
       { name: 'Graphiques', path: '/charts', ariaLabel: 'Aller à la page des graphiques' },
+      { name: 'Formations', path: '/tutorials', ariaLabel: 'Aller à la page des formations' },
+      { name: 'Temps flexible', path: '/flexible-times', ariaLabel: 'Aller à la page des temps flexibles' },
+      { name: 'Rappels', path: '/reminders', ariaLabel: 'Aller à la page des rappels' },
+      { name: 'Équipes de nuit', path: '/night-shifts', ariaLabel: 'Aller à la page des équipes de nuit' },
+      { name: 'Rôles et permissions', path: '/roles', ariaLabel: 'Aller à la page des rôles et permissions' },
     ]
 
     const toggleMenu = () => {
@@ -122,5 +120,24 @@ export default {
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Additional global styles can be added here if necessary */
+/* Styles pour améliorer la réactivité */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Ajustement de la taille de la police pour les petits écrans */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+/* Assurer que les boutons et les champs de formulaire sont faciles à toucher sur mobile */
+button, input, select, textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
 </style>

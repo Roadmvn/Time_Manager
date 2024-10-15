@@ -17,7 +17,9 @@ defmodule TimeManager.Application do
       # Start a worker by calling: TimeManager.Worker.start_link(arg)
       # {TimeManager.Worker, arg},
       # Start to serve requests, typically the last entry
-      TimeManagerWeb.Endpoint
+      TimeManagerWeb.Endpoint,
+      # Ajout du serveur de rappels
+      TimeManager.Notifications.ReminderServer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -235,4 +235,100 @@ defmodule TimeManager.Times do
     |> Repo.all()
   end
 
+
+  alias TimeManager.Times.FlexibleWorkingTime
+
+  @doc """
+  Returns the list of flexible_working_times.
+
+  ## Examples
+
+      iex> list_flexible_working_times()
+      [%FlexibleWorkingTime{}, ...]
+
+  """
+  def list_flexible_working_times do
+    Repo.all(FlexibleWorkingTime)
+  end
+
+  @doc """
+  Gets a single flexible_working_time.
+
+  Raises `Ecto.NoResultsError` if the Flexible working time does not exist.
+
+  ## Examples
+
+      iex> get_flexible_working_time!(123)
+      %FlexibleWorkingTime{}
+
+      iex> get_flexible_working_time!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_flexible_working_time!(id), do: Repo.get!(FlexibleWorkingTime, id)
+
+  @doc """
+  Creates a flexible_working_time.
+
+  ## Examples
+
+      iex> create_flexible_working_time(%{field: value})
+      {:ok, %FlexibleWorkingTime{}}
+
+      iex> create_flexible_working_time(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_flexible_working_time(attrs \\ %{}) do
+    %FlexibleWorkingTime{}
+    |> FlexibleWorkingTime.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a flexible_working_time.
+
+  ## Examples
+
+      iex> update_flexible_working_time(flexible_working_time, %{field: new_value})
+      {:ok, %FlexibleWorkingTime{}}
+
+      iex> update_flexible_working_time(flexible_working_time, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_flexible_working_time(%FlexibleWorkingTime{} = flexible_working_time, attrs) do
+    flexible_working_time
+    |> FlexibleWorkingTime.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a flexible_working_time.
+
+  ## Examples
+
+      iex> delete_flexible_working_time(flexible_working_time)
+      {:ok, %FlexibleWorkingTime{}}
+
+      iex> delete_flexible_working_time(flexible_working_time)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_flexible_working_time(%FlexibleWorkingTime{} = flexible_working_time) do
+    Repo.delete(flexible_working_time)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking flexible_working_time changes.
+
+  ## Examples
+
+      iex> change_flexible_working_time(flexible_working_time)
+      %Ecto.Changeset{data: %FlexibleWorkingTime{}}
+
+  """
+  def change_flexible_working_time(%FlexibleWorkingTime{} = flexible_working_time, attrs \\ %{}) do
+    FlexibleWorkingTime.changeset(flexible_working_time, attrs)
+  end
 end

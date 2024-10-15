@@ -20,6 +20,9 @@ defmodule TimeManagerWeb.Router do
     get "/", PageController, :home
   end
 
+
+
+
   # Other scopes may use custom stacks.
   # scope "/api", TimeManagerWeb do
   #   pipe_through :api
@@ -69,4 +72,39 @@ defmodule TimeManagerWeb.Router do
     put "/tasks/:id", TaskController, :update
     delete "/tasks/:id", TaskController, :delete
   end
+
+  scope "/api", TimeManagerWeb do
+    pipe_through :api
+
+    resources "/tutorials", TutorialController, except: [:new, :edit]
+  end
+
+  scope "/api", TimeManagerWeb do
+    pipe_through :api
+
+    resources "/flexible_working_times", FlexibleWorkingTimeController, except: [:new, :edit]
+  end
+
+  scope "/api", TimeManagerWeb do
+    pipe_through :api
+
+    resources "/reminders", ReminderController, except: [:new, :edit]
+  end
+
+  scope "/api", TimeManagerWeb do
+    pipe_through :api
+
+    resources "/night_shifts", NightShiftController, except: [:new, :edit]
+  end
+
+  scope "/api", TimeManagerWeb do
+    pipe_through :api
+
+    resources "/roles", RoleController, except: [:new, :edit]
+    resources "/permissions", PermissionController, except: [:new, :edit]
+    post "/roles/:role_id/permissions/:permission_id", RoleController, :add_permission
+    delete "/roles/:role_id/permissions/:permission_id", RoleController, :remove_permission
+  end
+
+
 end

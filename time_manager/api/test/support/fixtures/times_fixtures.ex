@@ -123,4 +123,21 @@ defmodule TimeManager.TimesFixtures do
 
     working_time
   end
+
+  @doc """
+  Generate a flexible_working_time.
+  """
+  def flexible_working_time_fixture(attrs \\ %{}) do
+    {:ok, flexible_working_time} =
+      attrs
+      |> Enum.into(%{
+        end_time: ~U[2024-10-14 20:12:00Z],
+        night_hours: 120.5,
+        overtime_hours: 120.5,
+        start_time: ~U[2024-10-14 20:12:00Z]
+      })
+      |> TimeManager.Times.create_flexible_working_time()
+
+    flexible_working_time
+  end
 end

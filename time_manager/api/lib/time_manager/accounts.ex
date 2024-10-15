@@ -1,6 +1,6 @@
 defmodule TimeManager.Accounts do
   @moduledoc """
-  The Accounts context.
+  Le contexte Accounts.
   """
 
   import Ecto.Query, warn: false
@@ -9,9 +9,9 @@ defmodule TimeManager.Accounts do
   alias TimeManager.Accounts.User
 
   @doc """
-  Returns the list of users.
+  Renvoie la liste des utilisateurs.
 
-  ## Examples
+  ## Exemples
 
       iex> list_users()
       [%User{}, ...]
@@ -31,11 +31,11 @@ defmodule TimeManager.Accounts do
   defp filter_by_username(query, username), do: where(query, [u], u.username == ^username)
 
   @doc """
-  Gets a single user.
+  Obtient un seul utilisateur.
 
-  Raises `Ecto.NoResultsError` if the User does not exist.
+  Lève `Ecto.NoResultsError` si l'utilisateur n'existe pas.
 
-  ## Examples
+  ## Exemples
 
       iex> get_user!(123)
       %User{}
@@ -47,9 +47,9 @@ defmodule TimeManager.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
-  Creates a user.
+  Crée un utilisateur.
 
-  ## Examples
+  ## Exemples
 
       iex> create_user(%{field: value})
       {:ok, %User{}}
@@ -65,9 +65,9 @@ defmodule TimeManager.Accounts do
   end
 
   @doc """
-  Updates a user.
+  Met à jour un utilisateur.
 
-  ## Examples
+  ## Exemples
 
       iex> update_user(user, %{field: new_value})
       {:ok, %User{}}
@@ -83,9 +83,9 @@ defmodule TimeManager.Accounts do
   end
 
   @doc """
-  Deletes a user.
+  Supprime un utilisateur.
 
-  ## Examples
+  ## Exemples
 
       iex> delete_user(user)
       {:ok, %User{}}
@@ -99,9 +99,9 @@ defmodule TimeManager.Accounts do
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking user changes.
+  Renvoie un `%Ecto.Changeset{}` pour suivre les changements de l'utilisateur.
 
-  ## Examples
+  ## Exemples
 
       iex> change_user(user)
       %Ecto.Changeset{data: %User{}}
@@ -109,5 +109,224 @@ defmodule TimeManager.Accounts do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  alias TimeManager.Accounts.Role
+
+  @doc """
+  Renvoie la liste des rôles.
+
+  ## Exemples
+
+      iex> list_roles()
+      [%Role{}, ...]
+
+  """
+  def list_roles do
+    Repo.all(Role)
+  end
+
+  @doc """
+  Obtient un seul rôle.
+
+  Lève `Ecto.NoResultsError` si le rôle n'existe pas.
+
+  ## Exemples
+
+      iex> get_role!(123)
+      %Role{}
+
+      iex> get_role!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_role!(id), do: Repo.get!(Role, id)
+
+  @doc """
+  Crée un rôle.
+
+  ## Exemples
+
+      iex> create_role(%{field: value})
+      {:ok, %Role{}}
+
+      iex> create_role(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_role(attrs \\ %{}) do
+    %Role{}
+    |> Role.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Met à jour un rôle.
+
+  ## Exemples
+
+      iex> update_role(role, %{field: new_value})
+      {:ok, %Role{}}
+
+      iex> update_role(role, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_role(%Role{} = role, attrs) do
+    role
+    |> Role.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Supprime un rôle.
+
+  ## Exemples
+
+      iex> delete_role(role)
+      {:ok, %Role{}}
+
+      iex> delete_role(role)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_role(%Role{} = role) do
+    Repo.delete(role)
+  end
+
+  @doc """
+  Renvoie un `%Ecto.Changeset{}` pour suivre les changements du rôle.
+
+  ## Exemples
+
+      iex> change_role(role)
+      %Ecto.Changeset{data: %Role{}}
+
+  """
+  def change_role(%Role{} = role, attrs \\ %{}) do
+    Role.changeset(role, attrs)
+  end
+
+  alias TimeManager.Accounts.Permission
+
+  @doc """
+  Renvoie la liste des permissions.
+
+  ## Exemples
+
+      iex> list_permissions()
+      [%Permission{}, ...]
+
+  """
+  def list_permissions do
+    Repo.all(Permission)
+  end
+
+  @doc """
+  Obtient une seule permission.
+
+  Lève `Ecto.NoResultsError` si la permission n'existe pas.
+
+  ## Exemples
+
+      iex> get_permission!(123)
+      %Permission{}
+
+      iex> get_permission!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_permission!(id), do: Repo.get!(Permission, id)
+
+  @doc """
+  Crée une permission.
+
+  ## Exemples
+
+      iex> create_permission(%{field: value})
+      {:ok, %Permission{}}
+
+      iex> create_permission(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_permission(attrs \\ %{}) do
+    %Permission{}
+    |> Permission.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Met à jour une permission.
+
+  ## Exemples
+
+      iex> update_permission(permission, %{field: new_value})
+      {:ok, %Permission{}}
+
+      iex> update_permission(permission, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_permission(%Permission{} = permission, attrs) do
+    permission
+    |> Permission.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Supprime une permission.
+
+  ## Exemples
+
+      iex> delete_permission(permission)
+      {:ok, %Permission{}}
+
+      iex> delete_permission(permission)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_permission(%Permission{} = permission) do
+    Repo.delete(permission)
+  end
+
+  @doc """
+  Renvoie un `%Ecto.Changeset{}` pour suivre les changements de la permission.
+
+  ## Exemples
+
+      iex> change_permission(permission)
+      %Ecto.Changeset{data: %Permission{}}
+
+  """
+  def change_permission(%Permission{} = permission, attrs \\ %{}) do
+    Permission.changeset(permission, attrs)
+  end
+
+  def add_permission_to_role(role_id, permission_id) do
+    role = get_role!(role_id)
+    permission = get_permission!(permission_id)
+
+    role
+    |> Repo.preload(:permissions)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:permissions, [permission | role.permissions])
+    |> Repo.update()
+  end
+
+  def remove_permission_from_role(role_id, permission_id) do
+    role = get_role!(role_id)
+    permission = get_permission!(permission_id)
+
+    role
+    |> Repo.preload(:permissions)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:permissions, Enum.filter(role.permissions, &(&1.id != permission.id)))
+    |> Repo.update()
+  end
+
+  def user_has_permission?(user_id, permission_name) do
+    user = get_user!(user_id) |> Repo.preload(role: :permissions)
+    Enum.any?(user.role.permissions, &(&1.name == permission_name))
   end
 end
