@@ -19,11 +19,20 @@ defmodule TimeManagerWeb.Endpoint do
   #
   # You should set gzip to true if you are running phx.digest
   # when deploying your static files in production.
+
+  plug CORSPlug,
+  origin: ["http://localhost:8080"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  headers: ["Authorization", "Content-Type", "Accept"],
+  expose: ["Authorization", "Content-Type", "Accept"],
+  credentials: true,
+  max_age: 86400
+
   plug Plug.Static,
     at: "/",
     from: :time_manager,
     gzip: false,
-    only: TimeManagerWeb.static_paths()
+    only: ~w(assets fonts images favicon.ico robots.txt)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -49,6 +58,5 @@ defmodule TimeManagerWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug CORSPlug
   plug TimeManagerWeb.Router
 end
