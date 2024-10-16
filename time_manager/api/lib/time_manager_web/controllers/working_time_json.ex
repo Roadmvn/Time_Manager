@@ -19,7 +19,10 @@ defmodule TimeManagerWeb.WorkingTimeJSON do
     %{
       id: working_time.id,
       start: working_time.start,
-      end: working_time.end
+      end: working_time.end,
+      night_hours: working_time.night_hours,
+      day_hours: working_time.day_hours,
+      overtime_hours: working_time.overtime_hours
     }
   end
 end
