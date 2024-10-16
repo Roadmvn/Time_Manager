@@ -2,7 +2,6 @@
   <div class="working-times bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 max-w-4xl mx-auto">
     <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white border-b pb-2">Heures de travail</h2>
 
-    <!-- Sélecteur d'utilisateur -->
     <div class="mb-6">
       <label for="user-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sélectionner un utilisateur</label>
       <select
@@ -18,7 +17,6 @@
       </select>
     </div>
 
-    <!-- Formulaire pour ajouter/modifier des heures de travail -->
     <form @submit.prevent="submitWorkingTime" class="space-y-4 mb-6">
       <div class="flex flex-wrap -mx-2">
         <div class="w-full md:w-1/2 px-2 mb-4 md:mb-0">
@@ -54,13 +52,15 @@
       </div>
     </form>
 
-    <!-- Liste des heures de travail -->
     <div v-if="selectedUserId">
       <h3 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Plages horaires de travail</h3>
       <ul class="space-y-3">
         <li v-for="time in workingTimes" :key="time.id" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md shadow flex items-center justify-between transition-all duration-300 hover:shadow-md">
           <span class="text-gray-700 dark:text-gray-200">
             {{ formatDate(time.start) }} - {{ formatDate(time.end) }}
+          </span>
+          <span class="ml-2 text-blue-600 dark:text-blue-400">
+            (Jour : {{ time.day_hours }}h, Nuit : {{ time.night_hours }}h, Heures supp : {{ time.overtime_hours }}h)
           </span>
           <div class="space-x-2">
             <button @click="editWorkingTime(time)" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
@@ -125,7 +125,18 @@ export default {
       if (!selectedUserId.value) return
       try {
         const response = await http.get(`/workingtime/${selectedUserId.value}`)
-        workingTimes.value = response.data.data
+        workingTimes.value = response.data.data.map((time) => {
+          const start = new Date(time.start)
+          const end = new Date(time.end)
+          const { dayHours, nightHours, overtimeHours } = calculateHours(start, end)
+
+          return {
+            ...time,
+            day_hours: dayHours,
+            night_hours: nightHours,
+            overtime_hours: overtimeHours
+          }
+        })
         console.log('Heures de travail récupérées:', workingTimes.value)
       } catch (error) {
         console.error('Erreur lors de la récupération des heures de travail:', error)
@@ -135,14 +146,26 @@ export default {
     async function createWorkingTime() {
       if (!selectedUserId.value) return
       try {
-        const response = await http.post(`/workingtime`,
-			{"working_time":
-				{
-					"end": new Date(currentWorkingTime.value.end).toISOString(),
-					"start": new Date(currentWorkingTime.value.start).toISOString(),
-					"user_id": selectedUserId.value
-				}
-			})
+      
+        const start = new Date(currentWorkingTime.value.start)
+        const end = new Date(currentWorkingTime.value.end)
+
+        
+        const { dayHours, nightHours, overtimeHours } = calculateHours(start, end)
+
+       
+        const response = await http.post('/workingtime', {
+          working_time: {
+            start: start.toISOString(),
+            end: end.toISOString(),
+            user_id: selectedUserId.value,
+            day_hours: dayHours,
+            night_hours: nightHours,
+            overtime_hours: overtimeHours
+          }
+        })
+
+        // Ajouter les nouvelles heures de travail à la liste
         const newWorkingTime = response.data.data
         workingTimes.value.push(newWorkingTime)
         currentWorkingTime.value = { start: '', end: '' }
@@ -154,15 +177,22 @@ export default {
     async function updateWorkingTime() {
       if (!selectedUserId.value) return
       try {
-        const response = await http.put(`/workingtime/${currentWorkingTime.value.id}`,
-			{
-				"working_time":
-				{
-					"end": new Date(currentWorkingTime.value.end).toISOString(),
-					"start": new Date(currentWorkingTime.value.start).toISOString()
-				}
-			})
-        const updatedWorkingTime = response.data.data;
+        const start = new Date(currentWorkingTime.value.start)
+        const end = new Date(currentWorkingTime.value.end)
+        const { dayHours, nightHours, overtimeHours } = calculateHours(start, end)
+
+        const response = await http.put(`/workingtime/${currentWorkingTime.value.id}`, {
+          working_time: {
+            start: start.toISOString(),
+            end: end.toISOString(),
+            day_hours: dayHours,
+            night_hours: nightHours,
+            overtime_hours: overtimeHours
+          }
+        })
+
+        // Mettre à jour la liste des heures de travail dans l'état local
+        const updatedWorkingTime = response.data.data
         const index = workingTimes.value.findIndex(wt => wt.id === updatedWorkingTime.id)
         if (index !== -1) {
           workingTimes.value[index] = updatedWorkingTime
@@ -184,6 +214,41 @@ export default {
       }
     }
 
+    function calculateHours(start, end) {
+      const NIGHT_START = 22 // Heure de début du travail de nuit (22h)
+      const NIGHT_END = 6 // Heure de fin du travail de nuit (6h)
+      const MAX_HOURS = 8 // Nombre d'heures normales avant de considérer les heures supplémentaires
+
+      let totalNightHours = 0
+      let totalDayHours = 0
+      let current = new Date(start)
+
+      while (current < end) {
+        const nextHour = new Date(current)
+        nextHour.setHours(current.getHours() + 1, 0, 0, 0)
+
+        if (nextHour > end) {
+          nextHour.setTime(end.getTime())
+        }
+
+        const isNightTime = current.getHours() >= NIGHT_START || current.getHours() < NIGHT_END
+        const hoursWorked = (nextHour - current) / (1000 * 60 * 60)
+
+        if (isNightTime) {
+          totalNightHours += hoursWorked
+        } else {
+          totalDayHours += hoursWorked
+        }
+
+        current = nextHour
+      }
+
+      const totalHours = totalDayHours + totalNightHours
+      const overtimeHours = totalHours > MAX_HOURS ? totalHours - MAX_HOURS : 0
+
+      return { dayHours: totalDayHours, nightHours: totalNightHours, overtimeHours }
+    }
+
     function editWorkingTime(time) {
       currentWorkingTime.value = { ...time }
       isEditing.value = true
@@ -197,8 +262,15 @@ export default {
       }
     }
 
-    function formatDate(dateString) {
-      return new Date(dateString).toLocaleString()
+    function formatDate(date) {
+      const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      }
+      return new Date(date).toLocaleDateString('fr-FR', options)
     }
 
     return {
@@ -211,7 +283,7 @@ export default {
       getWorkingTimes,
       createWorkingTime,
       updateWorkingTime,
-      deleteWorkingTime,
+      deleteWorkingTime, 
       editWorkingTime,
       submitWorkingTime,
       formatDate
