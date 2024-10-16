@@ -147,6 +147,7 @@ defmodule TimeManager.Times do
   """
   def create_working_time(user_id, attrs \\ %{}) do
     attrs = Map.put(attrs, "user_id", user_id)
+
     %WorkingTime{}
     |> WorkingTime.changeset(attrs)
     |> Repo.insert()
@@ -213,12 +214,15 @@ defmodule TimeManager.Times do
   end
 
   defp filter_by_date_range(query, nil, nil), do: query
+
   defp filter_by_date_range(query, start, nil) do
     query |> where([w], w.start >= ^start)
   end
+
   defp filter_by_date_range(query, nil, end_time) do
     query |> where([w], w.end <= ^end_time)
   end
+
   defp filter_by_date_range(query, start, end_time) do
     query |> where([w], w.start >= ^start and w.end <= ^end_time)
   end
@@ -234,7 +238,6 @@ defmodule TimeManager.Times do
     |> where([w], w.user_id == ^user_id)
     |> Repo.all()
   end
-
 
   alias TimeManager.Times.FlexibleWorkingTime
 

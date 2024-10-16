@@ -4,9 +4,7 @@
       <header class="mb-8">
         <nav class="relative">
           <div class="flex justify-between items-center">
-            <router-link to="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition duration-300">
-              TimeManager
-            </router-link>
+           
             <button
               @click="toggleMenu"
               class="md:hidden bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
@@ -28,7 +26,11 @@
               v-show="isMenuOpen || !isMobile"
               class="md:flex md:space-x-6 md:justify-center absolute md:relative left-0 right-0 mt-2 md:mt-0 bg-white dark:bg-gray-800 shadow-md md:shadow-none rounded-md md:rounded-none p-4 md:p-0"
             >
+             <router-link to="/" class="text-2xl font-bold  text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition duration-300">
+              TimeManager
+            </router-link>
               <li v-for="item in navItems" :key="item.path" class="mb-2 md:mb-0">
+              
                 <router-link
                   :to="item.path"
                   class="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition duration-300 px-3 py-2 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900"
@@ -69,13 +71,10 @@ export default {
     const isMobile = ref(window.innerWidth < 768)
 
     const navItems = [
+      
       { name: 'Utilisateurs', path: '/users', ariaLabel: 'Aller à la page des utilisateurs' },
       { name: 'Heures de travail', path: '/working-times', ariaLabel: 'Aller à la page des heures de travail' },
       { name: 'Graphiques', path: '/charts', ariaLabel: 'Aller à la page des graphiques' },
-      { name: 'Formations', path: '/tutorials', ariaLabel: 'Aller à la page des formations' },
-      { name: 'Temps flexible', path: '/flexible-times', ariaLabel: 'Aller à la page des temps flexibles' },
-      { name: 'Rappels', path: '/reminders', ariaLabel: 'Aller à la page des rappels' },
-      { name: 'Équipes de nuit', path: '/night-shifts', ariaLabel: 'Aller à la page des équipes de nuit' },
       { name: 'Rôles et permissions', path: '/roles', ariaLabel: 'Aller à la page des rôles et permissions' },
     ]
 
