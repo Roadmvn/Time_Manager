@@ -1,0 +1,80 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install SSH Key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: |
+          -----BEGIN OPENSSH PRIVATE KEY-----
+          b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFwAAAAdzc2gtcn
+          NhAAAAAwEAAQAAAgEAop96dLD6G6885Wt/JAuxplF/JP2WVnfXsA+yxqMBUrtk4jzYWVhb
+          ZQb24uiWKQsMpYd3yP3oUqhByFWsPyQd0MsFNvGz09+S8hAjn4Ko82X+3jiiJTyrCOOM/w
+          Flh2yqGgc01LlRvIMBu7g8rRoxkodaRloatfrDeARqgB8pt1j789S8aenPoT2CmlUjD+et
+          WZQXs1U22X+eKi3c/j+AMaFegryMDLCuR1QTfWxJIJVxKhbH88st0b8/+PsdMB/mD5S3bi
+          gXvj3jUqdXBdXUr5iNh6GX8qB/vL/vSa8O1aKTwh+63Zd/8o2F+DQZCOCzZpxJOr7VoaXC
+          I/TT4HnuoXz/wlAEIHKl7WM0lpD4PWCV3VkfKcKfzSW4Fdb/YwzR5ZeAYDFBt0RhEb44C2
+          CISyIjwDUwslIV3x8PyjWQFz2QtpeVc8fOgMg3wyBtNAN1aC8VIPT/GQutDP0sfNpWJVFs
+          EIw0AdDbh0sczxYuLsjVqd3AQbGKJN9jV+DNA7GX/J4u0ng6L9dwCaQyb8DVfWXJcHjc7J
+          TiDIpR7WSlnEA4ND3FvFTEuK5NYqxv5aG58jTqdUNOoaMokAiPaOUc+p+ZWB8deh4A9Yc+
+          RbZMmjRWUxdOchc14+irLT97TvyIgjFNpVH6zYzWz/xdCVhMepNbmQv2/YSII7GwrXuzVl
+          0AAAdIghp/XIIaf1wAAAAHc3NoLXJzYQAAAgEAop96dLD6G6885Wt/JAuxplF/JP2WVnfX
+          sA+yxqMBUrtk4jzYWVhbZQb24uiWKQsMpYd3yP3oUqhByFWsPyQd0MsFNvGz09+S8hAjn4
+          Ko82X+3jiiJTyrCOOM/wFlh2yqGgc01LlRvIMBu7g8rRoxkodaRloatfrDeARqgB8pt1j7
+          89S8aenPoT2CmlUjD+etWZQXs1U22X+eKi3c/j+AMaFegryMDLCuR1QTfWxJIJVxKhbH88
+          st0b8/+PsdMB/mD5S3bigXvj3jUqdXBdXUr5iNh6GX8qB/vL/vSa8O1aKTwh+63Zd/8o2F
+          +DQZCOCzZpxJOr7VoaXCI/TT4HnuoXz/wlAEIHKl7WM0lpD4PWCV3VkfKcKfzSW4Fdb/Yw
+          zR5ZeAYDFBt0RhEb44C2CISyIjwDUwslIV3x8PyjWQFz2QtpeVc8fOgMg3wyBtNAN1aC8V
+          IPT/GQutDP0sfNpWJVFsEIw0AdDbh0sczxYuLsjVqd3AQbGKJN9jV+DNA7GX/J4u0ng6L9
+          dwCaQyb8DVfWXJcHjc7JTiDIpR7WSlnEA4ND3FvFTEuK5NYqxv5aG58jTqdUNOoaMokAiP
+          aOUc+p+ZWB8deh4A9Yc+RbZMmjRWUxdOchc14+irLT97TvyIgjFNpVH6zYzWz/xdCVhMep
+          NbmQv2/YSII7GwrXuzVl0AAAADAQABAAACAAm4D8S9FfmFF9XbPpI8K64VtUxT5oH88BRK
+          3+OcttXHstANlF2EmRO43pTxkxXZXfRfnAJUYGfeO+455o0wfqKtm35s5BMvy7OxULu1/p
+          xrVlfYGSKyFUO2+8R6xCNblG/xSdBD0hV62+Xo7SFoTRmlgrjtJicFmVyJIQdOtXrKc+Ze
+          6rLGwTyw9Sb9mxaWgUb3AZKbb2eAx8ZcDtbYGzR8IS6dj54rigLjzLVkfRtYKxb5nRIeLL
+          saG7vo4BXx9hksyWipN0AMqVMVgq8r2CX1b1Hxj6f1vSSd8PJdpryQVpXVuSCIryIjIKRU
+          ksFz0mz5vqum35QlWKy281m5V9BQ6M1cXAP3iFYHbDMse3Fjn/ut3qqNbpz57aHURMAewq
+          aTFD0Ux3d6WQpow6HGBnY3bGakPqJa6NBWWNgFgx7m+ZU3WCI+13eTFetebltzPis74PBK
+          nQvAplj5GEu1JjLsEx86B1KkbIrPxjzDQH2X6NqeChPDQWlhgNx9+y36SlfOKdGFEz4Jco
+          gKAyDbjAP6axfFc/iTCbJnZTNcxpCh+D3C7wxLUpbQB9T+hWJ/MZyyBDssSEb6pdxP1QmU
+          2yHi9B7gC5xoFbXDt3JZEwV8qE+fKTyXk90CAdpixtkbgybeZz6NnSAR9S/hID9+ffjjDI
+          w7vjmYiJmjYGBU1O2hAAABAAQP8wPvv5O3X162Num92q2UfoJu8eavTaMiW/FzUHxshBbe
+          SM0rri6lENzPFhds2z0gW6c/1pTegTAbEQgODUCk/vn2rcpeb/SBSJkhCKEBW7UyhHvUL0
+          /wI3eu1D/8POR+2gkm/kt7tEg3nWTlZiiinF7PntH4d9jjz6GAfX+PBmFNE+WEV2pWNj+4
+          6NyZRVIPalRPqZ6i+/2TcJAYTAxfSJHGB6iXDK7RHrebPHOCCVgpmxrdeOwXXAZsRpbai0
+          AcEcJVgFAWTrk1YbY6D49BtRC3nVsz6wOX+nlwv0Wm5Tdi2spwJvWIHL6Y0BvYzTqLKo7C
+          /sXx+XPv9lJLoNIAAAEBAOH8Rcbu6vvk/MAP5rhdED4rtg+dBGFjQgKFsaxQWRnVDjwFv6
+          xg8lxGIFPYAWr3EtBm0TfQc8AOqHvTwL4xplLwy7Loj0nh5WZVGCLcWcW7ilIWkhixlM3x
+          ft+IoUjs37jYKAZu8MroKnvcnUIIgSB9D0duYE/mnWIcDGvaHFO2Zcq83MM9IBsEnXqNW/
+          7iJhsvESKZvLpk4xT407W8Minwmfnkh9VfWPUP/MnhWk6Qa5oayLDNxQRqrSk95uFkrs2P
+          6GSlCb+mH5gnLA5XDYiWs9nn2uZj5/WRjtKVj8aZOe4FM33DnMbvomBErb7c2T6ZqLqEDV
+          vM2Akjs/rbqiEAAAEBALg40bSrf/iz7eQ+WdHuiRNbglwpmq3HaFBnGpgGvks9MwKZ6GXc
+          hTFGX97xTLsaeik0+tfXUwqsGfNF0SKWWJihkl4TWvWFDIzgZk57w+XPAyHCK5uGZ7cEu/
+          xzv8LDrUWysIxFGJ8gdku1viRDKnxpPH3cxIT4kgjGNVvnlTHGU+FXrEgY8lgaeYJ5knJ2
+          4IDdICWaKdLKlcVPPys/iFi6CIybAnCqNLE9djO1pRaIjPPelIj/J0yT9dBxQyUWtap18h
+          yDB8utvR5AD4HtklAYCUntLwCN+J/r/O2LPy3QJVcpVgLWqFxUTs8E0tVj1y/ElW6WB+Jk
+          IFemZwzHPL0AAAAPcGlzY2luZUBlcGl0ZWNoAQIDBA==
+          -----END OPENSSH PRIVATE KEY-----
+        known_hosts: |
+          |1|ef0Fnt1mn78Kb5oGnRHrE/V39Lg=|QOz74ObM8cEeMI6bUdD8DouLpMI= ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBIUizqxlKoWXZSZk8EREuFdyRxzeC/b/PikeWIsvEyNV1YBa3t//8GH5DRWcgzERLxYQ7qdqVu+7KZZ4AB4Pz+M=
+          1|aQtJGMG5eEJ2UZrY75/5aokMAWU=|qAWw810CuTKaBy3nrj1MA6b338c= ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCcW6Pawo2mPDmGMnhALN/mKtVGDNncczeeBuLmWznd2G98rTsymAqTgkcA/PN7FsVdhu/n0iV4WkwXWTkC8PhD0OR9X8RGPkHpF6rnv6gOgPMbuUlrglwQwr95FFZhxtCESFCzsTe4yW7h0sNIEskf0hmQwoDqVlgJulzdEwpK5tZy9AZ4mD8ooIT1who4fKVtMNs4m6sdxOIdl6KxmIGdHmOEGVz96TWotOHT1QwUOVfNQtJQstiFTZSIEONiDe//h+yTrcAlHJ66K1UI1svIuKLStF8Jo+dnXPcgxmE2MzKQh6KLkgRuCzOWfKKA1MwFQYWKjplvJi3dlK7kmOCOharlcla8/VGLc0Jv1XwjxZ6sj/ohghvU1ncwIdsJcdEF0ue2wBPG5Vygwg/3Vx92+lCzppZiA6cxXd1jFJPvwcd14UgRpo06jowAX2zztFvuP83SPjPa/GvpJZMyR17vE7Ckd7FB803/VtDPiQrxoBpeTOU00uZ7krFpr3Z1K3M=
+          |1|l+OeHcqMQHsXsE0SVnV6KOi5wBY=|pmrVu1evIu3Qz/o9DXJDlxZ5Hfs= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDqcIy+CykS4uZVoKt5sM7RneGrWFtx/cF02806DREyA
+    - name: Deploy to VPS
+      run: |
+        ssh -o StrictHostKeyChecking=no azureuser@20.19.81.174 << 'EOF'
+          cd /home/azureuser/T-POO-700-PAR_23/time_manager
+          git pull origin main
+          docker compose down
+          docker compose up --build -d
+        EOF
