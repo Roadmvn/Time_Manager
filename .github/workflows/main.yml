@@ -65,6 +65,6 @@ jobs:
         ssh azureuser@20.19.81.174 << 'EOF'
           cd /home/azureuser/T-POO-700-PAR_23/time_manager
           git pull origin main
-          docker compose down
+          docker compose down --volumes --remove-orphans
           docker compose up -d
         EOF
