@@ -21,7 +21,7 @@ defmodule TimeManagerWeb.Endpoint do
   # when deploying your static files in production.
 
   plug CORSPlug,
-  origin: ["http://20.19.81.174:8080"],
+  origin: ["*"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   headers: ["Authorization", "Content-Type", "Accept"],
   expose: ["Authorization", "Content-Type", "Accept"],
