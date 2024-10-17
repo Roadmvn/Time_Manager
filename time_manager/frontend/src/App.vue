@@ -1,10 +1,12 @@
 <template>
-  <div id="app" class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-200">
-    <div class="container mx-auto px-4 py-8">
-      <header class="mb-8">
-        <nav class="relative">
-          <div class="flex justify-between items-center">
-           
+  <div id="app" class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-200 flex flex-col justify-between">
+    <div class="container mx-auto px-4 py-8 flex flex-col items-center">
+      <header class="mb-8 w-full">
+        <nav class="relative w-full">
+          <div class="flex justify-center items-center space-x-4">
+            <router-link to="/" class="text-3xl font-extrabold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition duration-300">
+              TimeManager
+            </router-link>
             <button
               @click="toggleMenu"
               class="md:hidden bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
@@ -24,16 +26,12 @@
           >
             <ul
               v-show="isMenuOpen || !isMobile"
-              class="md:flex md:space-x-6 md:justify-center absolute md:relative left-0 right-0 mt-2 md:mt-0 bg-white dark:bg-gray-800 shadow-md md:shadow-none rounded-md md:rounded-none p-4 md:p-0"
+              class="md:flex md:space-x-6 mt-4 md:mt-0 justify-center bg-white dark:bg-gray-800 shadow-md md:shadow-none rounded-md p-4 md:p-0 md:bg-transparent dark:md:bg-transparent"
             >
-             <router-link to="/" class="text-2xl font-bold  text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition duration-300">
-              TimeManager
-            </router-link>
               <li v-for="item in navItems" :key="item.path" class="mb-2 md:mb-0">
-              
                 <router-link
                   :to="item.path"
-                  class="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition duration-300 px-3 py-2 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900"
+                  class="block text-xl text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition duration-300 px-4 py-2 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900"
                   :aria-label="item.ariaLabel"
                   @click="closeMenu"
                 >
@@ -45,7 +43,7 @@
         </nav>
       </header>
 
-      <main>
+      <main class="flex-grow w-full max-w-3xl">
         <transition
           enter-active-class="transition-opacity duration-300"
           enter-from-class="opacity-0"
@@ -58,6 +56,22 @@
         </transition>
       </main>
     </div>
+
+    <footer class="bg-gray-200 dark:bg-gray-900 text-gray-700 dark:text-gray-400 py-4 mt-8 w-full">
+  <div class="container mx-auto px-4 flex justify-between ">
+    <div>
+      <p>Si vous avez un problème, contactez un admin au <strong>+33 6 12 34 56 78</strong></p>
+    </div>
+    <div>
+      <h4 class="font-bold">Comment utiliser le site ? :
+        <router-link to="/tutorial" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline">
+          Tutoriel
+        </router-link>
+      </h4>
+    </div>
+  </div>
+</footer>
+
   </div>
 </template>
 
@@ -71,11 +85,11 @@ export default {
     const isMobile = ref(window.innerWidth < 768)
 
     const navItems = [
-      
       { name: 'Utilisateurs', path: '/users', ariaLabel: 'Aller à la page des utilisateurs' },
       { name: 'Heures de travail', path: '/working-times', ariaLabel: 'Aller à la page des heures de travail' },
       { name: 'Graphiques', path: '/charts', ariaLabel: 'Aller à la page des graphiques' },
       { name: 'Rôles et permissions', path: '/roles', ariaLabel: 'Aller à la page des rôles et permissions' },
+      { name: 'Tutoriel', path: '/tutorial', ariaLabel: 'Aller à la page du tutoriel' },
     ]
 
     const toggleMenu = () => {
@@ -119,7 +133,6 @@ export default {
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Styles pour améliorer la réactivité */
 @media (max-width: 640px) {
   .container {
     padding-left: 1rem;
@@ -127,14 +140,12 @@ export default {
   }
 }
 
-/* Ajustement de la taille de la police pour les petits écrans */
 @media (max-width: 480px) {
   body {
     font-size: 14px;
   }
 }
 
-/* Assurer que les boutons et les champs de formulaire sont faciles à toucher sur mobile */
 button, input, select, textarea {
   min-height: 44px;
   min-width: 44px;

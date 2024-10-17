@@ -2,7 +2,6 @@
   <div class="chart-manager bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 max-w-4xl mx-auto">
     <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white border-b pb-2">Graphiques - Heures de travail</h2>
 
-    <!-- Sélecteur d'utilisateur -->
     <div class="mb-6">
       <label for="user-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sélectionner un utilisateur</label>
       <select
@@ -18,7 +17,19 @@
       </select>
     </div>
 
-    <!-- Options de filtrage -->
+    <div class="mb-6">
+      <label for="chart-type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type de graphique</label>
+      <select
+        id="chart-type"
+        v-model="chartType"
+        @change="processChartData"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      >
+        <option value="bar">Barres</option>
+        <option value="pie">Camembert</option>
+      </select>
+    </div>
+
     <div class="flex flex-wrap gap-4 mb-6">
       <button @click="showAllData" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md">Tout</button>
       <button @click="showCurrentMonthData" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md">Ce mois</button>
@@ -43,13 +54,13 @@
       <button @click="applyDateFilter" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">Appliquer le filtre</button>
     </div>
 
-    <!-- Conteneur pour le graphique -->
     <div v-if="selectedUserId" class="chart-container bg-gray-50 dark:bg-gray-700 rounded-lg shadow-inner p-4" style="height: 400px;">
       <canvas ref="chartCanvas"></canvas>
     </div>
     <p v-else class="text-gray-500 dark:text-gray-400 text-center mt-4">Veuillez sélectionner un utilisateur pour voir ses graphiques de travail.</p>
   </div>
 </template>
+
 
 <script>
 import { ref, onMounted, watch } from 'vue';
@@ -68,13 +79,9 @@ export default {
     const chartCanvas = ref(null);
     let chart = null;
 
-    const chartType = ref('bar'); // Par défaut, on commence avec le graphique à barres
-    const chartTypes = [
-      { value: 'bar', label: 'Barres' },
-      { value: 'pie', label: 'Camembert' }
-    ];
+    const chartType = ref('bar'); 
 
-    // Récupère la liste des utilisateurs
+   
     const getUsers = async () => {
       try {
         const response = await http.get('/users');
@@ -88,7 +95,7 @@ export default {
       }
     };
 
-    // Récupère les heures de travail et applique un filtrage sur les données
+    
     const fetchChartData = async () => {
       if (!selectedUserId.value) {
         console.warn('Aucun utilisateur sélectionné.');
@@ -103,7 +110,7 @@ export default {
             night_hours: item.night_hours,
             overtime_hours: item.overtime_hours,
           }));
-          filteredData.value = [...chartData.value]; // Par défaut, tout afficher
+          filteredData.value = [...chartData.value]; 
           processChartData();
         } else {
           console.error('Les heures de travail n\'ont pas été trouvées dans la réponse:', response);
@@ -113,7 +120,7 @@ export default {
       }
     };
 
-    // Filtre les données par plage de dates
+    
     const applyDateFilter = () => {
       if (startDate.value && endDate.value) {
         filteredData.value = chartData.value.filter(item => {
@@ -125,7 +132,7 @@ export default {
       }
     };
 
-    // Affiche toutes les données
+    
     const showAllData = () => {
       filteredData.value = [...chartData.value];
       startDate.value = '';
@@ -133,7 +140,7 @@ export default {
       processChartData();
     };
 
-    // Affiche les données du mois courant
+    
     const showCurrentMonthData = () => {
       const now = new Date();
       const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
@@ -149,7 +156,7 @@ export default {
       processChartData();
     };
 
-    // Process les données du graphique
+    
     const processChartData = () => {
       const labels = [];
       const dayHoursData = [];
@@ -163,100 +170,90 @@ export default {
         overtimeHoursData.push(entry.overtime_hours);
       });
 
-      if (chartType.value === 'pie') {
-        updatePieChart(dayHoursData, nightHoursData, overtimeHoursData);
-      } else {
-        updateBarChart(labels, dayHoursData, nightHoursData, overtimeHoursData);
-      }
-    };
-
-    // Mets à jour le graphique à barres
-    const updateBarChart = (labels, dayHoursData, nightHoursData, overtimeHoursData) => {
       if (chart) {
         chart.destroy();
       }
 
       const ctx = chartCanvas.value.getContext('2d');
-      chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Heures de jour',
-              data: dayHoursData,
-              backgroundColor: 'rgba(54, 162, 235, 0.5)',  // Bleu pour les heures de jour
-              borderColor: 'rgba(54, 162, 235, 1)',
+
+      if (chartType.value === 'pie') {
+        chart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: ['Heures de jour', 'Heures de nuit', 'Heures supplémentaires'],
+            datasets: [{
+              data: [
+                dayHoursData.reduce((a, b) => a + b, 0),
+                nightHoursData.reduce((a, b) => a + b, 0),
+                overtimeHoursData.reduce((a, b) => a + b, 0)
+              ],
+              backgroundColor: [
+                'rgba(54, 162, 235, 0.5)',   
+                'rgba(255, 159, 64, 0.5)',   
+                'rgba(75, 192, 192, 0.5)'    
+              ],
+              borderColor: [
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(75, 192, 192, 1)'
+              ],
               borderWidth: 1,
-            },
-            {
-              label: 'Heures de nuit',
-              data: nightHoursData,
-              backgroundColor: 'rgba(255, 159, 64, 0.5)',  // Orange pour les heures de nuit
-              borderColor: 'rgba(255, 159, 64, 1)',
-              borderWidth: 1,
-            },
-            {
-              label: 'Heures supplémentaires',
-              data: overtimeHoursData,
-              backgroundColor: 'rgba(75, 192, 192, 0.5)',  // Vert pour les heures supplémentaires
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1,
-            }
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { stacked: true },
-            y: {
-              beginAtZero: true,
-              stacked: true, // Superposer les barres pour un affichage empilé
-              title: {
-                display: true,
-                text: 'Heures',
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+          },
+        });
+      } else {
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Heures de jour',
+                data: dayHoursData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)', 
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+              },
+              {
+                label: 'Heures de nuit',
+                data: nightHoursData,
+                backgroundColor: 'rgba(255, 159, 64, 0.5)', 
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1,
+              },
+              {
+                label: 'Heures supplémentaires',
+                data: overtimeHoursData,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)', 
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+              }
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { stacked: true },
+              y: {
+                beginAtZero: true,
+                stacked: true,
+                title: {
+                  display: true,
+                  text: 'Heures',
+                },
               },
             },
           },
-        },
-      });
-    };
-
-    // Mets à jour le graphique camembert
-    const updatePieChart = (dayHoursData, nightHoursData, overtimeHoursData) => {
-      if (chart) {
-        chart.destroy();
+        });
       }
-
-      const ctx = chartCanvas.value.getContext('2d');
-      chart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: ['Heures de jour', 'Heures de nuit', 'Heures supplémentaires'],
-          datasets: [{
-            data: [dayHoursData.reduce((a, b) => a + b, 0), nightHoursData.reduce((a, b) => a + b, 0), overtimeHoursData.reduce((a, b) => a + b, 0)],
-            backgroundColor: [
-              'rgba(54, 162, 235, 0.5)',   // Bleu pour les heures de jour
-              'rgba(255, 159, 64, 0.5)',   // Orange pour les heures de nuit
-              'rgba(75, 192, 192, 0.5)'    // Vert pour les heures supplémentaires
-            ],
-            borderColor: [
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 159, 64, 1)',
-              'rgba(75, 192, 192, 1)'
-            ],
-            borderWidth: 1,
-          }],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-        },
-      });
     };
 
-    // Initialisation des données
+   
     onMounted(() => {
       getUsers();
     });
@@ -270,7 +267,6 @@ export default {
       selectedUserId,
       chartCanvas,
       chartType,
-      chartTypes,
       startDate,
       endDate,
       showAllData,
@@ -280,6 +276,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .chart-container {
