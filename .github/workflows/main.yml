@@ -66,5 +66,6 @@ jobs:
           cd /home/azureuser/T-POO-700-PAR_23/time_manager
           git pull origin main
           docker compose down --volumes --remove-orphans
+          docker compose build --no-cache
           docker compose up -d
         EOF
