@@ -18,19 +18,29 @@
       </select>
     </div>
 
-    <!-- Sélecteur de type de graphique -->
+    <!-- Options de filtrage -->
     <div class="flex flex-wrap gap-4 mb-6">
-      <button
-        v-for="type in chartTypes"
-        :key="type.value"
-        @click="changeChartType(type.value)"
-        :class="[
-          'px-4 py-2 rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2',
-          chartType === type.value ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-        ]"
-      >
-        {{ type.label }}
-      </button>
+      <button @click="showAllData" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md">Tout</button>
+      <button @click="showCurrentMonthData" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md">Ce mois</button>
+      <div>
+        <label for="start-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date de début</label>
+        <input
+          id="start-date"
+          v-model="startDate"
+          type="date"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        />
+      </div>
+      <div>
+        <label for="end-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date de fin</label>
+        <input
+          id="end-date"
+          v-model="endDate"
+          type="date"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        />
+      </div>
+      <button @click="applyDateFilter" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">Appliquer le filtre</button>
     </div>
 
     <!-- Conteneur pour le graphique -->
@@ -50,8 +60,11 @@ export default {
   name: 'ChartManager',
   setup() {
     const chartData = ref([]);
+    const filteredData = ref([]);
     const selectedUserId = ref('');
     const users = ref([]);
+    const startDate = ref('');
+    const endDate = ref('');
     const chartCanvas = ref(null);
     let chart = null;
 
@@ -75,7 +88,7 @@ export default {
       }
     };
 
-    // Récupère les heures de travail et calcule les heures de jour, de nuit et supplémentaires
+    // Récupère les heures de travail et applique un filtrage sur les données
     const fetchChartData = async () => {
       if (!selectedUserId.value) {
         console.warn('Aucun utilisateur sélectionné.');
@@ -84,18 +97,13 @@ export default {
       try {
         const response = await http.get(`/workingtime/${selectedUserId.value}`);
         if (response.data && response.data.data) {
-          chartData.value = response.data.data.map(item => {
-            const start = new Date(item.start);
-            const end = new Date(item.end);
-            const { dayHours, nightHours, overtimeHours } = calculateHours(start, end);
-
-            return {
-              date: item.start.split('T')[0],
-              day_hours: dayHours,
-              night_hours: nightHours,
-              overtime_hours: overtimeHours,
-            };
-          });
+          chartData.value = response.data.data.map(item => ({
+            date: item.start.split('T')[0],
+            day_hours: item.day_hours,
+            night_hours: item.night_hours,
+            overtime_hours: item.overtime_hours,
+          }));
+          filteredData.value = [...chartData.value]; // Par défaut, tout afficher
           processChartData();
         } else {
           console.error('Les heures de travail n\'ont pas été trouvées dans la réponse:', response);
@@ -105,40 +113,40 @@ export default {
       }
     };
 
-    // Logique pour calculer les heures de jour, nuit et supplémentaires
-    const calculateHours = (start, end) => {
-      const NIGHT_START = 22; // Heure de début du travail de nuit (22h)
-      const NIGHT_END = 6; // Heure de fin du travail de nuit (6h)
-      const MAX_HOURS = 8; // Heures normales avant de considérer les heures supplémentaires
-
-      let totalNightHours = 0;
-      let totalDayHours = 0;
-      let current = new Date(start);
-
-      while (current < end) {
-        const nextHour = new Date(current);
-        nextHour.setHours(current.getHours() + 1, 0, 0, 0);
-
-        if (nextHour > end) {
-          nextHour.setTime(end.getTime());
-        }
-
-        const isNightTime = current.getHours() >= NIGHT_START || current.getHours() < NIGHT_END;
-        const hoursWorked = (nextHour - current) / (1000 * 60 * 60);
-
-        if (isNightTime) {
-          totalNightHours += hoursWorked;
-        } else {
-          totalDayHours += hoursWorked;
-        }
-
-        current = nextHour;
+    // Filtre les données par plage de dates
+    const applyDateFilter = () => {
+      if (startDate.value && endDate.value) {
+        filteredData.value = chartData.value.filter(item => {
+          return item.date >= startDate.value && item.date <= endDate.value;
+        });
+        processChartData();
+      } else {
+        console.warn('Veuillez sélectionner les deux dates.');
       }
+    };
 
-      const totalHours = totalDayHours + totalNightHours;
-      const overtimeHours = totalHours > MAX_HOURS ? totalHours - MAX_HOURS : 0;
+    // Affiche toutes les données
+    const showAllData = () => {
+      filteredData.value = [...chartData.value];
+      startDate.value = '';
+      endDate.value = '';
+      processChartData();
+    };
 
-      return { dayHours: totalDayHours, nightHours: totalNightHours, overtimeHours };
+    // Affiche les données du mois courant
+    const showCurrentMonthData = () => {
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+      const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+
+      startDate.value = firstDayOfMonth;
+      endDate.value = lastDayOfMonth;
+
+      filteredData.value = chartData.value.filter(item => {
+        return item.date >= startDate.value && item.date <= endDate.value;
+      });
+
+      processChartData();
     };
 
     // Process les données du graphique
@@ -147,24 +155,16 @@ export default {
       const dayHoursData = [];
       const nightHoursData = [];
       const overtimeHoursData = [];
-      let totalDayHours = 0;
-      let totalNightHours = 0;
-      let totalOvertimeHours = 0;
 
-      chartData.value.forEach(entry => {
+      filteredData.value.forEach(entry => {
         labels.push(entry.date);
         dayHoursData.push(entry.day_hours);
         nightHoursData.push(entry.night_hours);
         overtimeHoursData.push(entry.overtime_hours);
-
-        // Ajout aux totaux pour l'affichage du camembert
-        totalDayHours += entry.day_hours;
-        totalNightHours += entry.night_hours;
-        totalOvertimeHours += entry.overtime_hours;
       });
 
       if (chartType.value === 'pie') {
-        updatePieChart(totalDayHours, totalNightHours, totalOvertimeHours);
+        updatePieChart(dayHoursData, nightHoursData, overtimeHoursData);
       } else {
         updateBarChart(labels, dayHoursData, nightHoursData, overtimeHoursData);
       }
@@ -224,7 +224,7 @@ export default {
     };
 
     // Mets à jour le graphique camembert
-    const updatePieChart = (dayHours, nightHours, overtimeHours) => {
+    const updatePieChart = (dayHoursData, nightHoursData, overtimeHoursData) => {
       if (chart) {
         chart.destroy();
       }
@@ -235,7 +235,7 @@ export default {
         data: {
           labels: ['Heures de jour', 'Heures de nuit', 'Heures supplémentaires'],
           datasets: [{
-            data: [dayHours, nightHours, overtimeHours],
+            data: [dayHoursData.reduce((a, b) => a + b, 0), nightHoursData.reduce((a, b) => a + b, 0), overtimeHoursData.reduce((a, b) => a + b, 0)],
             backgroundColor: [
               'rgba(54, 162, 235, 0.5)',   // Bleu pour les heures de jour
               'rgba(255, 159, 64, 0.5)',   // Orange pour les heures de nuit
@@ -256,14 +256,7 @@ export default {
       });
     };
 
-    // Fonction pour changer le type de graphique
-    const changeChartType = (type) => {
-      chartType.value = type;
-      if (chartData.value.length) {
-        processChartData();
-      }
-    };
-
+    // Initialisation des données
     onMounted(() => {
       getUsers();
     });
@@ -278,7 +271,11 @@ export default {
       chartCanvas,
       chartType,
       chartTypes,
-      changeChartType,
+      startDate,
+      endDate,
+      showAllData,
+      showCurrentMonthData,
+      applyDateFilter
     };
   },
 };
