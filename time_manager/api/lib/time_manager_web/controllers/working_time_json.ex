@@ -26,3 +26,5 @@ defmodule TimeManagerWeb.WorkingTimeJSON do
     }
   end
 end
+
+      
