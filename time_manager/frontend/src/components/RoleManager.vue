@@ -114,7 +114,7 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { EditIcon, TrashIcon, PlusIcon, RefreshCwIcon, XIcon } from 'lucide-vue-next'
-import { http } from '@/api/network/axios'
+import http from '@/api/network/axios'
 
 export default {
   name: 'RoleManager',

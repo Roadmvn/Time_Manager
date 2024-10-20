@@ -48,29 +48,19 @@ defmodule TimeManagerWeb.Router do
   scope "/api", TimeManagerWeb do
     pipe_through :api
 
-    # User routes
-    get "/users", UserController, :index
-    get "/users/:id", UserController, :show
-    post "/users", UserController, :create
-    put "/users/:id", UserController, :update
-    delete "/users/:id", UserController, :delete
+    post "/login", AuthController, :login
+    post "/logout", AuthController, :logout
 
-    # WorkingTime routes
-    get "/workingtime", WorkingTimeController, :index
-    get "/workingtime/:user_id", WorkingTimeController, :show
-    post "/workingtime", WorkingTimeController, :create
-    put "/workingtime/:id", WorkingTimeController, :update
-    delete "/workingtime/:id", WorkingTimeController, :delete
+    resources "/users", UserController, except: [:new, :edit]
+    resources "/workingtimes", WorkingTimeController, except: [:new, :edit]
+    resources "/clocks", ClockController, except: [:new, :edit]
+    resources "/teams", TeamController, except: [:new, :edit]
 
-    # Clock routes
-    get "/clocks/:user_id", ClockController, :index
-    post "/clocks/:user_id", ClockController, :create
+    post "/teams/:id/working_time", TeamController, :create_working_time
 
-    # Tasks routes
-    get "/tasks/:id", TaskController, :show
-    post "/tasks", TaskController, :create
-    put "/tasks/:id", TaskController, :update
-    delete "/tasks/:id", TaskController, :delete
+    put "/users/:id/promote_manager", UserController, :promote_to_manager
+    put "/users/:id/promote_admin", UserController, :promote_to_admin
+    put "/users/:id/demote", UserController, :demote_to_user
   end
 
   scope "/api", TimeManagerWeb do

@@ -76,13 +76,19 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useAuthStore } from '@/store/auth'
 
 export default {
   name: 'App',
   setup() {
     const isMenuOpen = ref(false)
     const isMobile = ref(window.innerWidth < 768)
+    const authStore = useAuthStore()
+
+    const isAuthenticated = computed(() => authStore.isAuthenticated)
+    const isAdmin = computed(() => authStore.userRole === 'admin')
+    const isManagerOrAdmin = computed(() => ['manager', 'admin'].includes(authStore.userRole))
 
     const navItems = [
       { name: 'Utilisateurs', path: '/users', ariaLabel: 'Aller à la page des utilisateurs' },
@@ -109,6 +115,16 @@ export default {
       }
     }
 
+    const logout = async () => {
+      try {
+        await authStore.logout()
+        // Rediriger vers la page de connexion après la déconnexion
+        this.$router.push('/login')
+      } catch (error) {
+        console.error('Logout failed:', error)
+      }
+    }
+
     onMounted(() => {
       window.addEventListener('resize', handleResize)
     })
@@ -122,7 +138,11 @@ export default {
       isMobile,
       navItems,
       toggleMenu,
-      closeMenu
+      closeMenu,
+      isAuthenticated,
+      isAdmin,
+      isManagerOrAdmin,
+      logout
     }
   }
 }
@@ -151,3 +171,4 @@ button, input, select, textarea {
   min-width: 44px;
 }
 </style>
+

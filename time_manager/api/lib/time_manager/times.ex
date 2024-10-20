@@ -334,4 +334,17 @@ defmodule TimeManager.Times do
   def change_flexible_working_time(%FlexibleWorkingTime{} = flexible_working_time, attrs \\ %{}) do
     FlexibleWorkingTime.changeset(flexible_working_time, attrs)
   end
+
+  def create_team_working_time(team_id, start_time, end_time) do
+    team = Teams.get_team!(team_id)
+
+    Enum.each(team.users, fn user ->
+      create_working_time(%{
+        user_id: user.id,
+        start: start_time,
+        end: end_time,
+        is_team_time: true
+      })
+    end)
+  end
 end
