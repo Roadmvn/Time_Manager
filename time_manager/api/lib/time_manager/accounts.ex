@@ -350,4 +350,17 @@ defmodule TimeManager.Accounts do
     get_user!(user_id)
     |> update_user_role("user")
   end
+
+  def authenticate_user(email, password) do
+    user = Repo.get_by(User, email: email)
+    case user do
+      nil -> {:error, :not_found}
+      user ->
+        if Bcrypt.verify_pass(password, user.password_hash) do
+          {:ok, user}
+        else
+          {:error, :invalid_password}
+        end
+    end
+  end
 end

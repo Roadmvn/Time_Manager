@@ -76,7 +76,7 @@ Les contributions sont les bienvenues ! Veuillez suivre ces étapes :
 4. Poussez vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrez une Pull Request
 
-
+# en cas de problème  
    rm -rf node_modules
    rm package-lock.json
    npm install

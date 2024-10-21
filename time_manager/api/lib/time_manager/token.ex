@@ -6,9 +6,9 @@ defmodule TimeManager.Token do
     |> add_claim("xsrf", fn -> Joken.generate_jti() end)
   end
 
-  def generate_and_sign(extra_claims) do
+  def generate_and_sign_token(extra_claims \\ %{}) do
     extra_claims
-    |> token_config()
+    |> Map.merge(token_config())
     |> generate_and_sign()
   end
 end

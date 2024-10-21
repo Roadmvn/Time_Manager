@@ -14,6 +14,10 @@ defmodule TimeManagerWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :authenticate_user do
+    plug TimeManagerWeb.AuthPlug
+  end
+
   scope "/", TimeManagerWeb do
     pipe_through :browser
 
@@ -51,22 +55,25 @@ defmodule TimeManagerWeb.Router do
     post "/login", AuthController, :login
     post "/logout", AuthController, :logout
 
+    pipe_through :authenticate_user
+
     resources "/users", UserController, except: [:new, :edit]
-    resources "/workingtimes", WorkingTimeController, except: [:new, :edit]
     resources "/clocks", ClockController, except: [:new, :edit]
+    resources "/workingtimes", WorkingTimeController, except: [:new, :edit]
     resources "/teams", TeamController, except: [:new, :edit]
+    resources "/tutorials", TutorialController, except: [:new, :edit]
+    resources "/flexible_working_times", FlexibleWorkingTimeController, except: [:new, :edit]
+    resources "/reminders", ReminderController, except: [:new, :edit]
+    resources "/night_shifts", NightShiftController, except: [:new, :edit]
+    resources "/roles", RoleController, except: [:new, :edit]
+    resources "/permissions", PermissionController, except: [:new, :edit]
 
     post "/teams/:id/working_time", TeamController, :create_working_time
-
     put "/users/:id/promote_manager", UserController, :promote_to_manager
     put "/users/:id/promote_admin", UserController, :promote_to_admin
     put "/users/:id/demote", UserController, :demote_to_user
-  end
-
-  scope "/api", TimeManagerWeb do
-    pipe_through :api
-
-    resources "/tutorials", TutorialController, except: [:new, :edit]
+    post "/roles/:role_id/permissions/:permission_id", RoleController, :add_permission
+    delete "/roles/:role_id/permissions/:permission_id", RoleController, :remove_permission
   end
 
   scope "/api", TimeManagerWeb do

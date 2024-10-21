@@ -5,7 +5,7 @@ defmodule TimeManager.Accounts.Role do
   schema "roles" do
     field :name, :string
     many_to_many :permissions, TimeManager.Accounts.Permission, join_through: "roles_permissions"
-    has_many :users, TimeManager.Accounts.User
+    has_many :users, TimeManager.Accounts.User, foreign_key: :role
 
     timestamps()
   end
