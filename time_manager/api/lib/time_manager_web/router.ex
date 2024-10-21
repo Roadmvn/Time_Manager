@@ -52,6 +52,7 @@ defmodule TimeManagerWeb.Router do
   scope "/api", TimeManagerWeb do
     pipe_through :api
 
+    post "/signup", UserController, :create
     post "/login", AuthController, :login
     post "/logout", AuthController, :logout
 

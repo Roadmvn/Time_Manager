@@ -81,8 +81,43 @@ defmodule TimeManagerWeb.UserControllerTest do
     end
   end
 
+  describe "promote user to manager" do
+    setup [:create_user]
+
+    test "promotes user to manager role", %{conn: conn, user: user} do
+      conn = put(conn, ~p"/api/users/#{user}/promote_manager")
+      assert %{"id" => id, "role" => "manager"} = json_response(conn, 200)["data"]
+      assert id == user.id
+    end
+  end
+
+  describe "promote user to admin" do
+    setup [:create_user]
+
+    test "promotes user to admin role", %{conn: conn, user: user} do
+      conn = put(conn, ~p"/api/users/#{user}/promote_admin")
+      assert %{"id" => id, "role" => "admin"} = json_response(conn, 200)["data"]
+      assert id == user.id
+    end
+  end
+
+  describe "demote user" do
+    setup [:create_admin_user]
+
+    test "demotes admin to regular user", %{conn: conn, user: user} do
+      conn = put(conn, ~p"/api/users/#{user}/demote")
+      assert %{"id" => id, "role" => "user"} = json_response(conn, 200)["data"]
+      assert id == user.id
+    end
+  end
+
   defp create_user(_) do
     user = user_fixture()
+    %{user: user}
+  end
+
+  defp create_admin_user(_) do
+    user = user_fixture(%{role: "admin"})
     %{user: user}
   end
 end
