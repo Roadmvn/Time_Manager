@@ -6,7 +6,13 @@ defmodule TimeManagerWeb.AuthController do
   def login(conn, %{"email" => email, "password" => password}) do
     case Accounts.authenticate_user(email, password) do
       {:ok, user} ->
-        {:ok, token, _claims} = Token.generate_and_sign_token(%{user_id: user.id})
+        extra_claims = %{
+          "user_id" => user.id,
+          "role" => user.role
+        }
+        token = Token.generate_and_sign!(extra_claims)
+        #  Je ne sais pas à quoi sert la ligne du dessous donc à voir si on laisse
+        {:ok, claims} = Token.verify_and_validate(token)
         conn
         |> put_status(:ok)
         |> json(%{token: token})
