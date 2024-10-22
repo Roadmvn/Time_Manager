@@ -62,6 +62,7 @@ defmodule TimeManager.MixProject do
       {:cors_plug, "~> 3.0"},
       {:dotenv, "~> 3.0.0"},
       {:joken, "~> 2.5"},
+      {:jose, "~> 1.11"},
       {:bcrypt_elixir, "~> 3.0"},
       {:guardian, "~> 2.3"}
     ]

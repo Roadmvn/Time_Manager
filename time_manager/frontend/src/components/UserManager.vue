@@ -94,7 +94,7 @@ export default {
 
     async function createUser() {
       try {
-        await http.post('/users', {"user": currentUser.value}) 
+        await http.post('/users', {"user": currentUser.value})
         await getUsers()
         currentUser.value.username = "";
 		currentUser.value.email = "";
@@ -139,7 +139,7 @@ export default {
     const updateUserRole = async (user, newRole) => {
       try {
         await http.put(`/users/${user.id}/${newRole}`)
-        await fetchUsers()
+        // await fetchUsers()
       } catch (error) {
         console.error(`Erreur lors de la mise à jour du rôle de l'utilisateur en ${newRole}:`, error)
       }

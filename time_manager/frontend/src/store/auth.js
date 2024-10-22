@@ -1,5 +1,6 @@
+import { http } from '@/api/network/axios'
 import { defineStore } from 'pinia'
-import axios from '@/api/network/axios'
+
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -13,7 +14,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(email, password) {
       try {
-        const response = await axios.post('/login', { email, password })
+        const response = await http.post('/login', {"email": email, "password": password })
         this.token = response.data.token
         this.user = response.data.user
       } catch (error) {
@@ -23,7 +24,7 @@ export const useAuthStore = defineStore('auth', {
     },
     async logout() {
       try {
-        await axios.post('/logout')
+        await http.post('/logout')
         this.token = null
         this.user = null
       } catch (error) {
@@ -31,5 +32,15 @@ export const useAuthStore = defineStore('auth', {
         throw error
       }
     },
+	async register(username, email, password) {
+		try {
+			const response = await http.post("/signup", {"user": {username, email, password}})
+			console.log("Response", response);
+		} catch (err) {
+			console.error("signup failed", err)
+			throw err
+		}
+
+	}
   },
 })

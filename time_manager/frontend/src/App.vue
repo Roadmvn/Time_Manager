@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-200 flex flex-col justify-between">
     <div class="container mx-auto px-4 py-8 flex flex-col items-center">
-      <header class="mb-8 w-full">
+      <header class="mb-8 w-full" v-if="isAuthenticated">
         <nav class="relative w-full">
           <div class="flex justify-center items-center space-x-4">
             <router-link to="/" class="text-3xl font-extrabold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition duration-300">
@@ -57,7 +57,7 @@
       </main>
     </div>
 
-    <footer class="bg-gray-200 dark:bg-gray-900 text-gray-700 dark:text-gray-400 py-4 mt-8 w-full">
+    <footer class="bg-gray-200 dark:bg-gray-900 text-gray-700 dark:text-gray-400 py-4 mt-8 w-full" v-if="isAuthenticated">
   <div class="container mx-auto px-4 flex justify-between ">
     <div>
       <p>Si vous avez un problème, contactez un admin au <strong>+33 6 12 34 56 78</strong></p>

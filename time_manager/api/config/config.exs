@@ -31,6 +31,8 @@ config :time_manager, TimeManagerWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :time_manager, TimeManager.Mailer, adapter: Swoosh.Adapters.Local
 
+config :joken, default_signer: System.get_env("SECRET_KEY_BASE") || "une_longue_chaine"
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
