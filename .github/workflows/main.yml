@@ -13,6 +13,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Install SSH client
+      run: sudo apt-get update && sudo apt-get install openssh-client -y
+
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2
       with:
