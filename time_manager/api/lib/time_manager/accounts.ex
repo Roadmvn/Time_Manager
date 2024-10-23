@@ -329,4 +329,38 @@ defmodule TimeManager.Accounts do
     user = get_user!(user_id) |> Repo.preload(role: :permissions)
     Enum.any?(user.role.permissions, &(&1.name == permission_name))
   end
+
+  def update_user_role(user, new_role) do
+    user
+    |> User.changeset(%{role: new_role})
+    |> Repo.update()
+  end
+
+  def promote_to_manager(user_id) do
+    get_user!(user_id)
+    |> update_user_role("manager")
+  end
+
+  def promote_to_admin(user_id) do
+    get_user!(user_id)
+    |> update_user_role("admin")
+  end
+
+  def demote_to_user(user_id) do
+    get_user!(user_id)
+    |> update_user_role("user")
+  end
+
+  def authenticate_user(email, password) do
+    user = Repo.get_by(User, email: email)
+    case user do
+      nil -> {:error, :not_found}
+      user ->
+        if Bcrypt.verify_pass(password, user.password_hash) do
+          {:ok, user}
+        else
+          {:error, :invalid_password}
+        end
+    end
+  end
 end

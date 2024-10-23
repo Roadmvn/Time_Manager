@@ -94,7 +94,7 @@ export default {
 
     async function createUser() {
       try {
-        await http.post('/users', {"user": currentUser.value}) 
+        await http.post('/users', {"user": currentUser.value})
         await getUsers()
         currentUser.value.username = "";
 		currentUser.value.email = "";
@@ -136,6 +136,20 @@ export default {
       }
     }
 
+    const updateUserRole = async (user, newRole) => {
+      try {
+        await http.put(`/users/${user.id}/${newRole}`)
+        // await fetchUsers()
+      } catch (error) {
+        console.error(`Erreur lors de la mise à jour du rôle de l'utilisateur en ${newRole}:`, error)
+      }
+    }
+
+    const canPromote = (currentUserRole, targetRole) => {
+      const roles = ['user', 'manager', 'admin']
+      return roles.indexOf(currentUserRole) > roles.indexOf(targetRole)
+    }
+
     return {
       users,
       currentUser,
@@ -145,7 +159,9 @@ export default {
       updateUser,
       deleteUser,
       editUser,
-      submitUser
+      submitUser,
+      updateUserRole,
+      canPromote
     }
   }
 }

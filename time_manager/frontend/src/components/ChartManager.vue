@@ -64,7 +64,7 @@
 
 <script>
 import { ref, onMounted, watch } from 'vue';
-import { http } from '@/api/network/axios';
+import http from '@/api/network/axios';
 import Chart from 'chart.js/auto';
 
 export default {
@@ -284,3 +284,4 @@ export default {
   width: 100%;
 }
 </style>
+

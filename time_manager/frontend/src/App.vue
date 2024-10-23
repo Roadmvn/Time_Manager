@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-200 flex flex-col justify-between">
     <div class="container mx-auto px-4 py-8 flex flex-col items-center">
-      <header class="mb-8 w-full">
+      <header class="mb-8 w-full" v-if="isAuthenticated">
         <nav class="relative w-full">
           <div class="flex justify-center items-center space-x-4">
             <router-link to="/" class="text-3xl font-extrabold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition duration-300">
@@ -52,12 +52,14 @@
           leave-from-class="opacity-100"
           leave-to-class="opacity-0"
         >
-          <router-view></router-view>
+		<router-view v-slot="{ Component }">
+			<component :is="Component" />
+		</router-view>
         </transition>
       </main>
     </div>
 
-    <footer class="bg-gray-200 dark:bg-gray-900 text-gray-700 dark:text-gray-400 py-4 mt-8 w-full">
+    <footer class="bg-gray-200 dark:bg-gray-900 text-gray-700 dark:text-gray-400 py-4 mt-8 w-full" v-if="isAuthenticated">
   <div class="container mx-auto px-4 flex justify-between ">
     <div>
       <p>Si vous avez un problème, contactez un admin au <strong>+33 6 12 34 56 78</strong></p>
@@ -76,20 +78,27 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+// onBeforeMount
+import { useAuthStore } from '@/store/auth'
 
 export default {
   name: 'App',
   setup() {
     const isMenuOpen = ref(false)
     const isMobile = ref(window.innerWidth < 768)
+    const authStore = useAuthStore()
+
+    const isAuthenticated = computed(() => authStore.isAuth)
+    const isAdmin = computed(() => authStore.userRole === 'admin')
+    const isManagerOrAdmin = computed(() => ['manager', 'admin'].includes(authStore.userRole))
 
     const navItems = [
-      { name: 'Utilisateurs', path: '/users', ariaLabel: 'Aller à la page des utilisateurs' },
-      { name: 'Heures de travail', path: '/working-times', ariaLabel: 'Aller à la page des heures de travail' },
-      { name: 'Graphiques', path: '/charts', ariaLabel: 'Aller à la page des graphiques' },
-      { name: 'Rôles et permissions', path: '/roles', ariaLabel: 'Aller à la page des rôles et permissions' },
-      { name: 'Tutoriel', path: '/tutorial', ariaLabel: 'Aller à la page du tutoriel' },
+      { name: 'Utilisateurs', path: '/app/users', ariaLabel: 'Aller à la page des utilisateurs' },
+      { name: 'Heures de travail', path: '/app/working-times', ariaLabel: 'Aller à la page des heures de travail' },
+      { name: 'Graphiques', path: '/app/charts', ariaLabel: 'Aller à la page des graphiques' },
+      { name: 'Rôles et permissions', path: '/app/roles', ariaLabel: 'Aller à la page des rôles et permissions' },
+      { name: 'Tutoriel', path: '/app/tutorial', ariaLabel: 'Aller à la page du tutoriel' },
     ]
 
     const toggleMenu = () => {
@@ -109,6 +118,16 @@ export default {
       }
     }
 
+    const logout = async () => {
+      try {
+        await authStore.logout()
+        // Rediriger vers la page de connexion après la déconnexion
+        this.$router.push('/login')
+      } catch (error) {
+        console.error('Logout failed:', error)
+      }
+    }
+
     onMounted(() => {
       window.addEventListener('resize', handleResize)
     })
@@ -117,12 +136,20 @@ export default {
       window.removeEventListener('resize', handleResize)
     })
 
+	// onBeforeMount(() => {
+	// 	this.authStore.getCurrentUser();
+	// })
+
     return {
       isMenuOpen,
       isMobile,
       navItems,
       toggleMenu,
-      closeMenu
+      closeMenu,
+      isAuthenticated,
+      isAdmin,
+      isManagerOrAdmin,
+      logout
     }
   }
 }
@@ -151,3 +178,4 @@ button, input, select, textarea {
   min-width: 44px;
 }
 </style>
+
