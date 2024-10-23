@@ -47,8 +47,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, defineEmits } from 'vue'
 import { useAuthStore } from '@/store/auth'
+
+const emit = defineEmits(['toggleLogin'])
+
 
 const authStore = useAuthStore()
 
@@ -63,9 +66,14 @@ const handleRegistration = async () => {
   error.value = ''
 
   try {
-    await authStore.register(username.value, email.value, password.value)
-    // Redirection après inscription réussie
-    // router.push('/dashboard')
+    const response = await authStore.register(username.value, email.value, password.value)
+	console.log("RESPONSESEEE", response);
+	if (response) {
+		username.value = "";
+		email.value = "";
+		password.value = "";
+		emit('toggleLogin')
+	}
   } catch (err) {
     error.value = "Échec de l'inscription. Veuillez réessayer."
   } finally {
