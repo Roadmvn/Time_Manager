@@ -7,9 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on:
-        group: default
-        labels: ubuntu-latest
+    runs-on: [self-hosted]
 
     steps:
     - name: Checkout code
