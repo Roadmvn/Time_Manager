@@ -8,6 +8,7 @@ import ProfileManagement from '../components/ProfileManagement.vue'
 import TeamManager from '../components/TeamManager.vue'
 import TeamWorkingTime from '../components/TeamWorkingTime.vue'
 import { useAuthStore } from '../store/auth';
+import { http } from '@/api/network/axios'
 
 const routes = [
 	{
@@ -32,7 +33,7 @@ const routes = [
 		 */
 		path: '/app',
 		children: [
-			// { path: '/', redirect: '/app/users' },
+			{ path: '/app', redirect: '/app/users' },
 			{ path: '/app/users', component: UserManager },
 			{ path: '/app/working-times', component: WorkingTimes },
 			{ path: '/app/charts', component: ChartManager },
@@ -78,23 +79,25 @@ router.beforeEach(async (to, from, next) => {
 
 	if (to.matched.some(record => record.meta.requiresAuth)) {
 		if (!isAuth) {
-		  // Redirigez vers la page de connexion si non authentifié
+			const resp = await http.get("/users/me");
+			console.log("RESPONSE", resp);
+			if (resp.status === 200) {
+				authStore.isAuth = true;
+				return next()
+			}
 		  return next('/auth');
 		}
 
-		// Vérifiez les rôles pour les routes nécessitant des autorisations spécifiques
 		if (to.matched.some(record => record.meta.requiresAdmin) && userRole !== 'admin') {
-		  return next('/'); // Rediriger vers la page d'accueil si pas admin
+		  return next('/');
 		}
 		if (to.matched.some(record => record.meta.requiresManager) && !['admin', 'manager'].includes(userRole)) {
-		  return next('/'); // Rediriger vers la page d'accueil si pas manager
+		  return next('/');
 		}
 	  } else if (to.matched.some(record => record.meta.forbiddenAfterAuth) && isAuth) {
-		// Si l'utilisateur est déjà authentifié et essaie d'accéder à la page d'authentification, redirigez-le
-		return next('/app'); // Redirection vers l'application principale
+		return next('/app');
 	  }
 
-	  // Continuer vers la route demandée
 	  next();
 });
 
