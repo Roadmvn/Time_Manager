@@ -32,7 +32,7 @@ const routes = [
 		 */
 		path: '/app',
 		children: [
-			{ path: '/', redirect: '/users' },
+			{ path: '/', redirect: '/app/users' },
 			{ path: '/users', component: UserManager },
 			{ path: '/working-times', component: WorkingTimes },
 			{ path: '/charts', component: ChartManager },
@@ -71,23 +71,32 @@ const router = createRouter({
 })
 
 /* eslint-disable */
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
 	const authStore = useAuthStore();
-	const isAuthenticated = authStore.isAuthenticated
+	const isAuth = authStore.isAuth;
 	const userRole = authStore.userRole;
-	console.log("ISAUTH", isAuthenticated);
 
-	if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
-	  next('/login')
-	} else if (to.matched.some(record => record.meta.requiresAdmin) && userRole !== 'admin') {
-	  next('/')
-	} else if (to.matched.some(record => record.meta.requiresManager) && !['admin', 'manager'].includes(userRole)) {
-	  next('/')
-	} else {
-	  next()
-	}
-  })
+	if (to.matched.some(record => record.meta.requiresAuth)) {
+		if (!isAuth) {
+		  // Redirigez vers la page de connexion si non authentifié
+		  return next('/auth');
+		}
 
+		// Vérifiez les rôles pour les routes nécessitant des autorisations spécifiques
+		if (to.matched.some(record => record.meta.requiresAdmin) && userRole !== 'admin') {
+		  return next('/'); // Rediriger vers la page d'accueil si pas admin
+		}
+		if (to.matched.some(record => record.meta.requiresManager) && !['admin', 'manager'].includes(userRole)) {
+		  return next('/'); // Rediriger vers la page d'accueil si pas manager
+		}
+	  } else if (to.matched.some(record => record.meta.forbiddenAfterAuth) && isAuth) {
+		// Si l'utilisateur est déjà authentifié et essaie d'accéder à la page d'authentification, redirigez-le
+		return next('/app'); // Redirection vers l'application principale
+	  }
+
+	  // Continuer vers la route demandée
+	  next();
+});
 
 
 export default router

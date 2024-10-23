@@ -3,6 +3,7 @@ defmodule TimeManagerWeb.UserController do
 
   alias TimeManager.Accounts
   alias TimeManager.Accounts.User
+  alias TimeManager.Token
 
   action_fallback TimeManagerWeb.FallbackController
 
@@ -94,6 +95,35 @@ defmodule TimeManagerWeb.UserController do
         |> put_status(:unprocessable_entity)
         |> put_view(json: TimeManagerWeb.ErrorJSON)
         |> render(:"422")
+    end
+  end
+
+  def get_me(conn, _params) do
+    IO.inspect("BONJOURRRR")
+    case Map.get(conn.req_cookies, "jwt_token") do
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Missing token"})
+
+      token ->
+        secret_key = System.get_env("JWT_SECRET") || "fallback_secret"
+        signer = Joken.Signer.create("HS256", secret_key)
+
+        case Token.verify_and_validate(token) do
+          {:ok, claims} ->
+            user_id = claims["user_id"]
+            user = Accounts.get_user!(user_id)
+
+            conn
+            |> put_status(:ok)
+            |> json(%{user: user})
+
+          {:error, _reason} ->
+            conn
+            |> put_status(:unauthorized)
+            |> json(%{error: "Invalid token"})
+        end
     end
   end
 end

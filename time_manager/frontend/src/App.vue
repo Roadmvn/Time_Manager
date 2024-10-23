@@ -52,7 +52,9 @@
           leave-from-class="opacity-100"
           leave-to-class="opacity-0"
         >
-          <router-view></router-view>
+		<router-view v-slot="{ Component }">
+			<component :is="Component" />
+		</router-view>
         </transition>
       </main>
     </div>
@@ -77,6 +79,7 @@
 
 <script>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+// onBeforeMount
 import { useAuthStore } from '@/store/auth'
 
 export default {
@@ -86,7 +89,7 @@ export default {
     const isMobile = ref(window.innerWidth < 768)
     const authStore = useAuthStore()
 
-    const isAuthenticated = computed(() => authStore.isAuthenticated)
+    const isAuthenticated = computed(() => authStore.isAuth)
     const isAdmin = computed(() => authStore.userRole === 'admin')
     const isManagerOrAdmin = computed(() => ['manager', 'admin'].includes(authStore.userRole))
 
@@ -132,6 +135,10 @@ export default {
     onUnmounted(() => {
       window.removeEventListener('resize', handleResize)
     })
+
+	// onBeforeMount(() => {
+	// 	this.authStore.getCurrentUser();
+	// })
 
     return {
       isMenuOpen,

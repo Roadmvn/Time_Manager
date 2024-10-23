@@ -6,6 +6,7 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: null,
     user: null,
+	isAuth: false
   }),
   getters: {
     isAuthenticated: (state) => !!state.token,
@@ -15,8 +16,12 @@ export const useAuthStore = defineStore('auth', {
     async login(email, password) {
       try {
         const response = await http.post('/login', {"email": email, "password": password })
-        this.token = response.data.token
-        this.user = response.data.user
+		console.log("Response", response);
+		if (response.status !== 200) throw new Error('The returned status was not expected');
+
+		this.getCurrentUser();
+		return true;
+
       } catch (error) {
         console.error('Login failed:', error)
         throw error
@@ -41,6 +46,12 @@ export const useAuthStore = defineStore('auth', {
 			throw err
 		}
 
+	},
+	async getCurrentUser() {
+		const response = await http.get("/users/me")
+		console.log("RESPONSE", response);
+		this.isAuth = true;
+		this.user = response.data.user
 	}
-  },
+  }
 })

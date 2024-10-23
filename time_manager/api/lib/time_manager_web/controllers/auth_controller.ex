@@ -14,8 +14,9 @@ defmodule TimeManagerWeb.AuthController do
         #  Je ne sais pas à quoi sert la ligne du dessous donc à voir si on laisse
         {:ok, claims} = Token.verify_and_validate(token)
         conn
+        |> put_resp_cookie("jwt_token", token, max_age: 86400, http_only: true, secure: true, same_site: "Strict")
         |> put_status(:ok)
-        |> json(%{token: token})
+        |> json(%{message: "Login successful"})
       {:error, _reason} ->
         conn
         |> put_status(:unauthorized)

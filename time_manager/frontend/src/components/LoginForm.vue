@@ -44,8 +44,10 @@
 import { ref } from 'vue'
 import { useAuthStore } from '@/store/auth'
 import { LockClosedIcon } from '@heroicons/vue/24/solid'
+import { useRouter } from 'vue-router';
 
 const authStore = useAuthStore()
+const router = useRouter();
 
 const email = ref('')
 const password = ref('')
@@ -57,7 +59,10 @@ const handleLogin = async () => {
   error.value = ''
 
   try {
-    await authStore.login(email.value, password.value)
+    const resp = await authStore.login(email.value, password.value)
+	if (resp) {
+		router.push("/app/users")
+	}
     // Redirection après connexion réussie
     // router.push('/dashboard')
   } catch (err) {
