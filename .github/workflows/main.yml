@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, ubuntu-latest-bjfxp-runner-sljc8]
+    runs-on: [self-hosted, ubuntu-latest-bjfxp-runner-sljc8, self-hosted-lzsmf-runner-9m465]
 
     steps:
     - name: Checkout code
