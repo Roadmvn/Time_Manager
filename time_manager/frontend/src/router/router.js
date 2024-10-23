@@ -32,12 +32,12 @@ const routes = [
 		 */
 		path: '/app',
 		children: [
-			{ path: '/', redirect: '/app/users' },
-			{ path: '/users', component: UserManager },
-			{ path: '/working-times', component: WorkingTimes },
-			{ path: '/charts', component: ChartManager },
-			{ path: '/tutorial', component: PdfViewer, props: { pdfFilePath: 'tutoriel.pdf' } },
-			{ path: '/roles', component: RoleManager },
+			// { path: '/', redirect: '/app/users' },
+			{ path: '/app/users', component: UserManager },
+			{ path: '/app/working-times', component: WorkingTimes },
+			{ path: '/app/charts', component: ChartManager },
+			{ path: '/app/tutorial', component: PdfViewer, props: { pdfFilePath: 'tutoriel.pdf' } },
+			{ path: '/app/roles', component: RoleManager },
 			{
 				path: '/profile',
 				component: ProfileManagement,
