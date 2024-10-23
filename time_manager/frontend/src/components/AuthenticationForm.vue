@@ -8,7 +8,7 @@
       </div>
       <div class="mt-8 space-y-6">
         <LoginForm v-if="isLogin" @switch-mode="toggleMode" />
-        <Registration v-else @switch-mode="toggleMode" />
+        <Registration v-else @switch-mode="toggleMode" @toggle-login="toggleLogin" />
       </div>
     </div>
   </div>
@@ -23,5 +23,9 @@ const isLogin = ref(true)
 
 const toggleMode = () => {
   isLogin.value = !isLogin.value
+}
+
+const toggleLogin = () => {
+	isLogin.value = !isLogin.value
 }
 </script>

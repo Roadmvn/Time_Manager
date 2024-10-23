@@ -40,6 +40,9 @@ export const useAuthStore = defineStore('auth', {
 	async register(username, email, password) {
 		try {
 			const response = await http.post("/signup", {"user": {username, email, password}})
+			if (response.status === 201) {
+				return true;
+			}
 			console.log("Response", response);
 		} catch (err) {
 			console.error("signup failed", err)
