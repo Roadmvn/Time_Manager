@@ -56,10 +56,9 @@ defmodule TimeManagerWeb.Router do
 
     # Gestion des teams et des working times
     resources "/teams", TeamController do
-      get "/members", TeamController, :list_members
+      get "/members", TeamController, :members
       post "/members/:user_id", TeamController, :add_member
       delete "/members/:user_id", TeamController, :remove_member
-      get "/clock_history", TeamController, :clock_history
     end
 
     # Gestion des autres ressources

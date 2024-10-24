@@ -19,7 +19,10 @@ defmodule TimeManagerWeb.TeamJSON do
     %{
       id: team.id,
       name: team.name,
-      created_at: team.inserted_at
+      users: Enum.map(team.users, fn user -> %{
+        id: user.id,
+        username: user.username
+      } end)
     }
   end
 

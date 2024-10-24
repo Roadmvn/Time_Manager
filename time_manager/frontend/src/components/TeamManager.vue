@@ -69,7 +69,10 @@
                 {{ team.name }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                {{ team.users?.length || 0 }} membres
+                {{ team.members_count || 0 }} membres
+                <div v-if="team.users && team.users.length > 0" class="text-xs text-gray-400">
+                  {{ team.users.map(u => u.username).join(', ') }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <button 
@@ -131,7 +134,7 @@
         </select>
       </div>
 
-      <!-- Liste des membres de l'équipe et leur statut -->
+      <!-- Liste des membres de l'équipe -->
       <div v-if="selectedTeamId" class="mt-8">
         <h3 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
           Membres de l'équipe
@@ -141,16 +144,7 @@
                class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md shadow flex items-center justify-between">
             <div>
               <span class="text-gray-700 dark:text-gray-200">{{ member.username }}</span>
-              <span :class="[
-                'ml-3 px-2 py-1 rounded-full text-xs font-medium',
-                member.isClockIn ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              ]">
-                {{ member.isClockIn ? 'Au travail' : 'Absent' }}
-              </span>
             </div>
-            <span class="text-gray-500 dark:text-gray-400">
-              {{ member.startTime ? formatDate(member.startTime) : 'Pas de pointage' }}
-            </span>
           </div>
         </div>
       </div>
@@ -286,13 +280,23 @@ const isTeamClockIn = ref(false)
 const fetchTeams = async () => {
   try {
     const response = await http.get('/teams')
-    teams.value = response.data.data.map(team => ({
-      ...team,
-      users: team.users || [], // Utiliser uniquement users
-      members_count: (team.users || []).length // Ajouter un compteur explicite
-    }))
+    console.log('Données reçues du serveur:', response.data)
+    
+    if (response.data && response.data.data) {
+      teams.value = response.data.data.map(team => ({
+        id: team.id,
+        name: team.name,
+        users: Array.isArray(team.users) ? team.users : [],
+        members_count: Array.isArray(team.users) ? team.users.length : 0
+      }))
+    } else {
+      teams.value = []
+    }
+    
+    console.log('Teams après traitement:', teams.value)
   } catch (error) {
     console.error('Erreur lors de la récupération des équipes:', error)
+    teams.value = []
   }
 }
 
@@ -300,9 +304,8 @@ const fetchTeams = async () => {
 const getTeamMembers = async () => {
   if (!selectedTeamId.value) return
   try {
-    const response = await http.get(`/teams/${selectedTeamId.value}/members/status`)
+    const response = await http.get(`/teams/${selectedTeamId.value}/members`)
     teamMembers.value = response.data.data
-    isTeamClockIn.value = teamMembers.value.every(member => member.isClockIn)
   } catch (error) {
     console.error('Erreur lors de la récupération des membres:', error)
   }
@@ -317,14 +320,6 @@ const toggleTeamClock = async () => {
   } catch (error) {
     console.error('Erreur lors du pointage d\'équipe:', error)
   }
-}
-
-const formatDate = (date) => {
-  return new Date(date).toLocaleString('fr-FR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
 }
 
 const showMemberModal = ref(false)
@@ -355,13 +350,18 @@ const openMemberModal = (team) => {
 const addMember = async () => {
   if (!selectedUserId.value) return
   try {
+    console.log('Ajout membre - ID équipe:', selectedTeam.value.id)
+    console.log('Ajout membre - ID utilisateur:', selectedUserId.value)
+    
     await http.post(`/teams/${selectedTeam.value.id}/members/${selectedUserId.value}`)
-    // Rafraîchir immédiatement les données
     await fetchTeams()
-    // Mettre à jour l'équipe sélectionnée avec les nouvelles données
+    
     const updatedTeam = teams.value.find(t => t.id === selectedTeam.value.id)
-    selectedTeam.value = updatedTeam
-    // Rafraîchir la liste des utilisateurs disponibles
+    console.log('Équipe mise à jour:', updatedTeam)
+    
+    selectedTeam.value = { ...updatedTeam }
+    console.log('État selectedTeam après mise à jour:', selectedTeam.value)
+    
     await fetchAvailableUsers()
     selectedUserId.value = ''
   } catch (error) {
@@ -383,6 +383,20 @@ onMounted(() => {
   fetchTeams()
 })
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

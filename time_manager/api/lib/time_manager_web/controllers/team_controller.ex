@@ -7,8 +7,19 @@ defmodule TimeManagerWeb.TeamController do
 
   def index(conn, _params) do
     teams = Teams.list_teams()
-    |> Repo.preload(:users)  # Préchargement des utilisateurs
-    render(conn, :index, teams: teams)
+         |> Repo.preload(:users)
+
+    teams_with_users = Enum.map(teams, fn team ->
+      %{
+        id: team.id,
+        name: team.name,
+        users: Enum.map(team.users, fn user ->
+          %{id: user.id, username: user.username}
+        end)
+      }
+    end)
+
+    render(conn, :index, teams: teams_with_users)
   end
 
   def create(conn, %{"team" => team_params}) do
@@ -89,6 +100,13 @@ defmodule TimeManagerWeb.TeamController do
          {:ok, user} <- Accounts.get_user(user_id),
          {:ok, _updated_team} <- Teams.remove_team_member(team, user) do
       send_resp(conn, :no_content, "")
+    end
+  end
+
+  def members(conn, %{"id" => id}) do
+    with {:ok, team} <- Teams.get_team(id) do
+      team = Repo.preload(team, :users)
+      render(conn, :members, users: team.users)
     end
   end
 
