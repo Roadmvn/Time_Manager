@@ -49,9 +49,9 @@ const routes = [
 				meta: { requiresAdmin: true }
 			},
 			{
-				path: '/teams',
+				path: '/app/teams',
 				component: TeamManager,
-				meta: { requiresManager: true }
+
 			},
 			{
 				path: '/team-working-time',

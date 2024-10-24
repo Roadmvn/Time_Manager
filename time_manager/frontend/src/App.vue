@@ -95,6 +95,7 @@ export default {
 
     const navItems = [
       { name: 'Utilisateurs', path: '/app/users', ariaLabel: 'Aller à la page des utilisateurs' },
+      { name: 'Équipes', path: '/app/teams', ariaLabel: 'Aller à la page des équipes' },
       { name: 'Heures de travail', path: '/app/working-times', ariaLabel: 'Aller à la page des heures de travail' },
       { name: 'Graphiques', path: '/app/charts', ariaLabel: 'Aller à la page des graphiques' },
       { name: 'Rôles et permissions', path: '/app/roles', ariaLabel: 'Aller à la page des rôles et permissions' },
@@ -178,4 +179,3 @@ button, input, select, textarea {
   min-width: 44px;
 }
 </style>
-

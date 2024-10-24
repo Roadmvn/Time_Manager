@@ -55,8 +55,12 @@ defmodule TimeManagerWeb.Router do
     put "/users/:id/demote", UserController, :demote_to_user
 
     # Gestion des teams et des working times
-    resources "/teams", TeamController, except: [:new, :edit]
-    post "/teams/:id/working_time", TeamController, :create_working_time
+    resources "/teams", TeamController do
+      get "/members", TeamController, :list_members
+      post "/members/:user_id", TeamController, :add_member
+      delete "/members/:user_id", TeamController, :remove_member
+      get "/clock_history", TeamController, :clock_history
+    end
 
     # Gestion des autres ressources
     resources "/clocks", ClockController, except: [:new, :edit]
