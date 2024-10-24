@@ -64,7 +64,7 @@
 
 <script>
 import { ref, onMounted, watch } from 'vue';
-import http from '@/api/network/axios';
+import { http } from "@/api/network/axios";
 import Chart from 'chart.js/auto';
 
 export default {
@@ -79,9 +79,9 @@ export default {
     const chartCanvas = ref(null);
     let chart = null;
 
-    const chartType = ref('bar'); 
+    const chartType = ref('bar');
 
-   
+
     const getUsers = async () => {
       try {
         const response = await http.get('/users');
@@ -95,14 +95,14 @@ export default {
       }
     };
 
-    
+
     const fetchChartData = async () => {
       if (!selectedUserId.value) {
         console.warn('Aucun utilisateur sélectionné.');
         return;
       }
       try {
-        const response = await http.get(`/workingtime/${selectedUserId.value}`);
+        const response = await http.get(`/workingtimes/${selectedUserId.value}`);
         if (response.data && response.data.data) {
           chartData.value = response.data.data.map(item => ({
             date: item.start.split('T')[0],
@@ -110,7 +110,7 @@ export default {
             night_hours: item.night_hours,
             overtime_hours: item.overtime_hours,
           }));
-          filteredData.value = [...chartData.value]; 
+          filteredData.value = [...chartData.value];
           processChartData();
         } else {
           console.error('Les heures de travail n\'ont pas été trouvées dans la réponse:', response);
@@ -120,7 +120,7 @@ export default {
       }
     };
 
-    
+
     const applyDateFilter = () => {
       if (startDate.value && endDate.value) {
         filteredData.value = chartData.value.filter(item => {
@@ -132,7 +132,7 @@ export default {
       }
     };
 
-    
+
     const showAllData = () => {
       filteredData.value = [...chartData.value];
       startDate.value = '';
@@ -140,7 +140,7 @@ export default {
       processChartData();
     };
 
-    
+
     const showCurrentMonthData = () => {
       const now = new Date();
       const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
@@ -156,7 +156,7 @@ export default {
       processChartData();
     };
 
-    
+
     const processChartData = () => {
       const labels = [];
       const dayHoursData = [];
@@ -188,9 +188,9 @@ export default {
                 overtimeHoursData.reduce((a, b) => a + b, 0)
               ],
               backgroundColor: [
-                'rgba(54, 162, 235, 0.5)',   
-                'rgba(255, 159, 64, 0.5)',   
-                'rgba(75, 192, 192, 0.5)'    
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(255, 159, 64, 0.5)',
+                'rgba(75, 192, 192, 0.5)'
               ],
               borderColor: [
                 'rgba(54, 162, 235, 1)',
@@ -214,21 +214,21 @@ export default {
               {
                 label: 'Heures de jour',
                 data: dayHoursData,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)', 
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1,
               },
               {
                 label: 'Heures de nuit',
                 data: nightHoursData,
-                backgroundColor: 'rgba(255, 159, 64, 0.5)', 
+                backgroundColor: 'rgba(255, 159, 64, 0.5)',
                 borderColor: 'rgba(255, 159, 64, 1)',
                 borderWidth: 1,
               },
               {
                 label: 'Heures supplémentaires',
                 data: overtimeHoursData,
-                backgroundColor: 'rgba(75, 192, 192, 0.5)', 
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
               }
@@ -253,7 +253,7 @@ export default {
       }
     };
 
-   
+
     onMounted(() => {
       getUsers();
     });

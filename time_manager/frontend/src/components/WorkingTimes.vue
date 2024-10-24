@@ -160,7 +160,7 @@ export default {
     async function getWorkingTimes() {
       if (!selectedUserId.value) return;
       try {
-        const response = await http.get(`/workingtime/${selectedUserId.value}`);
+        const response = await http.get(`/workingtimes/${selectedUserId.value}`);
         workingTimes.value = response.data.data.map((time) => {
           const start = new Date(time.start);
           const end = new Date(time.end);
@@ -195,7 +195,7 @@ export default {
           end
         );
 
-        const response = await http.post("/workingtime", {
+        const response = await http.post("/workingtimes", {
           working_time: {
             start: start.toISOString(),
             end: end.toISOString(),
@@ -235,7 +235,7 @@ export default {
         );
 
         const response = await http.put(
-          `/workingtime/${currentWorkingTime.value.id}`,
+          `/workingtimes/${currentWorkingTime.value.id}`,
           {
             working_time: {
               start: start.toISOString(),
@@ -268,7 +268,7 @@ export default {
     async function deleteWorkingTime(id) {
       if (!selectedUserId.value) return;
       try {
-        await http.delete(`/workingtime/${id}`);
+        await http.delete(`/workingtimes/${id}`);
         workingTimes.value = workingTimes.value.filter((wt) => wt.id !== id);
       } catch (error) {
         console.error(

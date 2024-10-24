@@ -8,6 +8,7 @@ defmodule TimeManagerWeb.WorkingTimeController do
 
   # GET /api/workingtime
   def index(conn, _params) do
+    IO.inspect("BONJOUUUUUUUUr")
     workingtimes = Times.list_workingtimes()
     render(conn, :index, workingtimes: workingtimes)
   end
@@ -27,7 +28,8 @@ defmodule TimeManagerWeb.WorkingTimeController do
   end
 
   # GET /api/workingtime/:user_id
-  def show(conn, %{"user_id" => user_id}) do
+  def show(conn, %{"id" => user_id}) do
+    IO.inspect("HELLLLOW")
     working_times = Times.get_working_times_by_user!(user_id)
     render(conn, :index, workingtimes: working_times)
   end

@@ -352,6 +352,7 @@ defmodule TimeManager.Accounts do
   end
 
   def authenticate_user(email, password) do
+    IO.inspect("JZFEAIJFIDAJFAIEZJIFEZAJIFEZ")
     user = Repo.get_by(User, email: email)
     case user do
       nil -> {:error, :not_found}
