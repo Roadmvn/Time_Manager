@@ -10,6 +10,10 @@ defmodule TimeManagerWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :authenticate_user do
+    plug TimeManagerWeb.Plugs.VerifyUser
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
