@@ -49,9 +49,9 @@ const routes = [
 				meta: { requiresAdmin: true }
 			},
 			{
-				path: '/teams',
+				path: '/app/teams',
 				component: TeamManager,
-				meta: { requiresManager: true }
+
 			},
 			{
 				path: '/team-working-time',
@@ -79,12 +79,22 @@ router.beforeEach(async (to, from, next) => {
 
 	if (to.matched.some(record => record.meta.requiresAuth)) {
 		if (!isAuth) {
-			const resp = await http.get("/users/me");
-			console.log("RESPONSE", resp);
-			if (resp.status === 200) {
-				authStore.isAuth = true;
-				return next()
+			try {
+					const resp = await http.get("/users/me");
+				console.log("RESPONSE", resp);
+				if (resp.status === 200) {
+					authStore.isAuth = true;
+					return next()
+				} else if(resp.status === 401) {
+					authStore.isAuth = false;
+				}
+
+			} catch (error) {
+				if (error.status === 401) {
+					authStore.isAuth = false;
+				}
 			}
+
 		  return next('/auth');
 		}
 
@@ -96,6 +106,17 @@ router.beforeEach(async (to, from, next) => {
 		}
 	  } else if (to.matched.some(record => record.meta.forbiddenAfterAuth) && isAuth) {
 		return next('/app');
+	  }
+
+	  if (isAuth) {
+		try {
+			await http.get("/users/me")
+		} catch (err) {
+			if (err.status === 401) {
+				authStore.isAuth = false;
+				return next("/auth")
+			}
+		}
 	  }
 
 	  next();

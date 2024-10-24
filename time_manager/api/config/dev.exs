@@ -3,7 +3,7 @@ import Config
 # Configure your database
 config :time_manager, TimeManager.Repo,
   username: System.get_env("POSTGRES_USER") || "postgres",
-  password: System.get_env("POSTGRES_PASSWORD") || "Agnes",
+  password: System.get_env("POSTGRES_PASSWORD") || "root",
   hostname: System.get_env("PGHOST") || "localhost",
   database: System.get_env("POSTGRES_DB") || "time_manager_dev",
   stacktrace: true,

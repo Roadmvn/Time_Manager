@@ -33,6 +33,8 @@ config :time_manager, TimeManager.Mailer, adapter: Swoosh.Adapters.Local
 
 config :joken, default_signer: System.get_env("SECRET_KEY_BASE") || "une_longue_chaine"
 
+# config :time_manager, jwt_secret: "super_secret_key"
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",

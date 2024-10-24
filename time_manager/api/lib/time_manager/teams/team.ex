@@ -14,4 +14,16 @@ defmodule TimeManager.Teams.Team do
     |> cast(attrs, [:name])
     |> validate_required([:name])
   end
+
+  def changeset_add_member(team, attrs) do
+    team
+    |> cast(attrs, [])
+    |> cast_assoc(:users)
+  end
+
+  def changeset_remove_member(team, user) do
+    team
+    |> change()
+    |> put_assoc(:users, Enum.filter(team.users, &(&1.id != user.id)))
+  end
 end

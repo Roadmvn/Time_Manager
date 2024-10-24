@@ -10,6 +10,10 @@ defmodule TimeManagerWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :authenticate_user do
+    plug TimeManagerWeb.Plugs.VerifyUser
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -55,8 +59,11 @@ defmodule TimeManagerWeb.Router do
     put "/users/:id/demote", UserController, :demote_to_user
 
     # Gestion des teams et des working times
-    resources "/teams", TeamController, except: [:new, :edit]
-    post "/teams/:id/working_time", TeamController, :create_working_time
+    resources "/teams", TeamController do
+      get "/members", TeamController, :members
+      post "/members/:user_id", TeamController, :add_member
+      delete "/members/:user_id", TeamController, :remove_member
+    end
 
     # Gestion des autres ressources
     resources "/clocks", ClockController, except: [:new, :edit]
