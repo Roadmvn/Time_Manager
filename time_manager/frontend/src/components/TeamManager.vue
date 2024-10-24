@@ -3,14 +3,14 @@
     <!-- Navigation par onglets -->
     <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
       <nav class="flex space-x-4">
-        <button 
-          v-for="tab in tabs" 
+        <button
+          v-for="tab in tabs"
           :key="tab.id"
           @click="currentTab = tab.id"
           :class="[
             'py-2 px-4 text-sm font-medium rounded-t-lg',
-            currentTab === tab.id 
-              ? 'bg-blue-500 text-white' 
+            currentTab === tab.id
+              ? 'bg-blue-500 text-white'
               : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           ]"
         >
@@ -24,14 +24,14 @@
       <!-- Formulaire d'ajout d'équipe -->
       <form @submit.prevent="editingTeam ? updateTeam() : createTeam()" class="mb-6">
         <div class="flex gap-4">
-          <input 
-            v-model="newTeam.name" 
-            type="text" 
+          <input
+            v-model="newTeam.name"
+            type="text"
             :placeholder="editingTeam ? 'Modifier l\'équipe' : 'Nom de l\'équipe'"
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
           >
-          <button 
+          <button
             type="submit"
             :class="[
               'px-4 py-2 text-white rounded-md flex items-center',
@@ -75,19 +75,19 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button 
+                <button
                   @click="editTeam(team)"
                   class="text-blue-600 hover:text-blue-900 mr-3"
                 >
                   <EditIcon class="h-5 w-5" />
                 </button>
-                <button 
+                <button
                   @click="deleteTeam(team.id)"
                   class="text-red-600 hover:text-red-900 mr-3"
                 >
                   <TrashIcon class="h-5 w-5" />
                 </button>
-                <button 
+                <button
                   @click="openMemberModal(team)"
                   class="text-blue-600 hover:text-blue-900 mr-3"
                 >
@@ -104,8 +104,8 @@
     <div v-else-if="currentTab === 'clock'" class="clock-management">
       <!-- Votre code existant pour le pointage -->
       <div v-if="selectedTeamId" class="flex justify-center mb-8">
-        <button 
-          @click="toggleTeamClock" 
+        <button
+          @click="toggleTeamClock"
           :class="[
             'px-8 py-4 rounded-full text-white font-semibold transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2',
             isTeamClockIn ? 'bg-red-500 hover:bg-red-600 focus:ring-red-500' : 'bg-green-500 hover:bg-green-600 focus:ring-green-500'
@@ -140,7 +140,7 @@
           Membres de l'équipe
         </h3>
         <div class="space-y-4">
-          <div v-for="member in teamMembers" :key="member.id" 
+          <div v-for="member in teamMembers" :key="member.id"
                class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md shadow flex items-center justify-between">
             <div>
               <span class="text-gray-700 dark:text-gray-200">{{ member.username }}</span>
@@ -164,7 +164,7 @@
 
         <!-- Formulaire d'ajout -->
         <div class="flex gap-2 mb-6">
-          <select 
+          <select
             v-model="selectedUserId"
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           >
@@ -173,7 +173,7 @@
               {{ user.username }}
             </option>
           </select>
-          <button 
+          <button
             @click="addMember"
             class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
           >
@@ -186,7 +186,7 @@
           <div v-for="member in selectedTeam?.users || []" :key="member.id"
                class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
             <span class="text-gray-700 dark:text-gray-200">{{ member.username }}</span>
-            <button 
+            <button
               @click="removeMember(member.id)"
               class="text-red-600 hover:text-red-900"
             >
@@ -242,7 +242,7 @@ const updateTeam = async () => {
         name: newTeam.value.name
       }
     })
-    
+
     // Mise à jour locale de l'équipe
     const index = teams.value.findIndex(t => t.id === editingTeam.value.id)
     if (index !== -1) {
@@ -252,7 +252,7 @@ const updateTeam = async () => {
         members: teams.value[index].members || [] // Préserver les membres existants
       }
     }
-    
+
     editingTeam.value = null
     newTeam.value = { name: '' }
   } catch (error) {
@@ -262,7 +262,7 @@ const updateTeam = async () => {
 
 const deleteTeam = async (teamId) => {
   if (!confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?')) return
-  
+
   try {
     await http.delete(`/teams/${teamId}`)
     teams.value = teams.value.filter(team => team.id !== teamId)
@@ -281,7 +281,7 @@ const fetchTeams = async () => {
   try {
     const response = await http.get('/teams')
     console.log('Données reçues du serveur:', response.data)
-    
+
     if (response.data && response.data.data) {
       teams.value = response.data.data.map(team => ({
         id: team.id,
@@ -292,7 +292,7 @@ const fetchTeams = async () => {
     } else {
       teams.value = []
     }
-    
+
     console.log('Teams après traitement:', teams.value)
   } catch (error) {
     console.error('Erreur lors de la récupération des équipes:', error)
@@ -305,7 +305,7 @@ const getTeamMembers = async () => {
   if (!selectedTeamId.value) return
   try {
     const response = await http.get(`/teams/${selectedTeamId.value}/members`)
-    teamMembers.value = response.data.data
+    teamMembers.value = response.data.members
   } catch (error) {
     console.error('Erreur lors de la récupération des membres:', error)
   }
@@ -332,7 +332,7 @@ const fetchAvailableUsers = async () => {
   try {
     const response = await http.get('/users')
     const currentMembers = selectedTeam.value?.users || selectedTeam.value?.members || []
-    availableUsers.value = response.data.data.filter(user => 
+    availableUsers.value = response.data.data.filter(user =>
       !currentMembers.some(member => member.id === user.id)
     )
   } catch (error) {
@@ -352,16 +352,16 @@ const addMember = async () => {
   try {
     console.log('Ajout membre - ID équipe:', selectedTeam.value.id)
     console.log('Ajout membre - ID utilisateur:', selectedUserId.value)
-    
+
     await http.post(`/teams/${selectedTeam.value.id}/members/${selectedUserId.value}`)
     await fetchTeams()
-    
+
     const updatedTeam = teams.value.find(t => t.id === selectedTeam.value.id)
     console.log('Équipe mise à jour:', updatedTeam)
-    
+
     selectedTeam.value = { ...updatedTeam }
     console.log('État selectedTeam après mise à jour:', selectedTeam.value)
-    
+
     await fetchAvailableUsers()
     selectedUserId.value = ''
   } catch (error) {

@@ -25,6 +25,7 @@ defmodule TimeManagerWeb.TeamController do
   def create(conn, %{"team" => team_params}) do
     case Teams.create_team(team_params) do
       {:ok, team} ->
+        team = Repo.preload(team, :users)
         conn
         |> put_status(:created)
         |> render(:show, team: team)
@@ -103,10 +104,18 @@ defmodule TimeManagerWeb.TeamController do
     end
   end
 
-  def members(conn, %{"id" => id}) do
+  def members(conn, %{"team_id" => id}) do
     with {:ok, team} <- Teams.get_team(id) do
       team = Repo.preload(team, :users)
-      render(conn, :members, users: team.users)
+      json(conn, %{
+        members: Enum.map(team.users, fn user ->
+          %{
+            id: user.id,
+            username: user.username,
+            email: user.email
+          }
+        end)
+      })
     end
   end
 
