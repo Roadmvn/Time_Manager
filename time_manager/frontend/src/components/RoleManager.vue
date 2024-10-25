@@ -1,6 +1,6 @@
 <template>
   <div class="role-manager bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 max-w-4xl mx-auto">
-    
+
     <div class="relative mb-8">
       <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg -m-2"></div>
       <h2 class="relative text-3xl font-bold text-gray-800 dark:text-white">
@@ -10,7 +10,7 @@
         </span>
       </h2>
     </div>
-    
+
     <div class="mb-8">
       <div class="flex flex-col md:flex-row gap-4">
         <div class="flex-1 group">
@@ -19,7 +19,7 @@
               type="text"
               v-model="searchQuery"
               placeholder="Rechercher par email ou nom d'utilisateur..."
-              class="w-full px-4 py-3 pl-12 pr-4 border-2 border-gray-200 rounded-lg shadow-sm 
+              class="w-full px-4 py-3 pl-12 pr-4 border-2 border-gray-200 rounded-lg shadow-sm
                      transition-all duration-300 ease-in-out
                      focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
                      dark:bg-gray-700 dark:border-gray-600 dark:text-white
@@ -32,7 +32,7 @@
               </svg>
             </span>
           </div>
-          
+
           <transition
             enter-active-class="transition ease-out duration-200"
             enter-from-class="opacity-0 transform -translate-y-2"
@@ -98,7 +98,7 @@
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-95"
     >
-      <div v-if="!loading && !error && filteredUsers.length === 0" 
+      <div v-if="!loading && !error && filteredUsers.length === 0"
            class="text-center py-12 px-4 rounded-lg bg-gray-50 dark:bg-gray-800/50">
         <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -127,8 +127,10 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
-          <tr v-for="user in filteredUsers" 
-              :key="user.id" 
+            <template v-for="user in filteredUsers">
+          <tr
+              v-if="user.role !== 'admin'"
+              :key="user.id"
               class="transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/50"
               :class="{ 'opacity-50': updatingUsers.includes(user.id) }">
             <td class="px-6 py-4 whitespace-nowrap">
@@ -183,7 +185,7 @@
                   leave-from-class="opacity-100"
                   leave-to-class="opacity-0"
                 >
-                  <div v-if="updatingUsers.includes(user.id)" 
+                  <div v-if="updatingUsers.includes(user.id)"
                        class="absolute right-2 top-1/2 transform -translate-y-1/2">
                     <div class="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
                   </div>
@@ -191,6 +193,7 @@
               </div>
             </td>
           </tr>
+        </template>
         </tbody>
       </table>
     </div>
@@ -216,9 +219,9 @@ const availableRoles = [
 
 const filteredUsers = computed(() => {
   if (!searchQuery.value) return users.value
-  
+
   const query = searchQuery.value.toLowerCase().trim()
-  return users.value.filter(user => 
+  return users.value.filter(user =>
     user.username.toLowerCase().includes(query) ||
     user.email.toLowerCase().includes(query)
   )
@@ -226,12 +229,12 @@ const filteredUsers = computed(() => {
 
 const highlightMatch = (text) => {
   if (!searchQuery.value) return text
-  
+
   const query = searchQuery.value.toLowerCase()
   const index = text.toLowerCase().indexOf(query)
-  
+
   if (index === -1) return text
-  
+
   return text.slice(0, index) +
     `<span class="bg-yellow-200 dark:bg-yellow-600">${text.slice(index, index + query.length)}</span>` +
     text.slice(index + query.length)
@@ -251,7 +254,7 @@ const handleSearch = debounce(() => {
 const fetchUsers = async () => {
   loading.value = true
   error.value = null
-  
+
   try {
     const response = await http.get('/users')
     users.value = response.data.data
@@ -265,19 +268,19 @@ const fetchUsers = async () => {
 
 const updateUserRole = async (user, newRole) => {
   if (user.role === newRole) return
-  
+
   updatingUsers.value.push(user.id)
-  
+
   try {
     await http.put(`/users/${user.id}`, {
       user: { role: newRole }
     })
-    
+
     const userIndex = users.value.findIndex(u => u.id === user.id)
     if (userIndex !== -1) {
       users.value[userIndex] = { ...users.value[userIndex], role: newRole }
     }
-    
+
   } catch (err) {
     error.value = `Erreur lors de la mise à jour du rôle pour ${user.username}`
     console.error('Erreur lors de la mise à jour du rôle:', err)
