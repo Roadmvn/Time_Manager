@@ -26,6 +26,7 @@ defmodule TimeManagerWeb.AuthController do
 
   def logout(conn, _params) do
     conn
+    |> delete_resp_cookie("jwt_token")
     |> put_status(:ok)
     |> json(%{message: "Logged out successfully"})
   end

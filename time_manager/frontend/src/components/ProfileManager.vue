@@ -9,6 +9,17 @@
         </span>
       </h2>
     </div>
+	<div>
+        <button
+        @click="logout()"
+          class="bg-red-500 hover:bg-red-600 text-white px-6 py-2.5 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm hover:shadow-md flex items-center space-x-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>Logout</span>
+        </button>
+	</div>
 
     <!-- Profile Information Card -->
     <div class="mb-8 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg border border-gray-100 dark:border-gray-600">
@@ -78,13 +89,15 @@
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/store/auth';
 import { http } from '@/api/network/axios';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'ProfileManager',
   setup() {
     const authStore = useAuthStore();
     const user = computed(() => authStore.user);
-    
+    const router = useRouter();
+
     const profile = ref({
       username: user.value.username,
       email: user.value.email
@@ -117,10 +130,18 @@ export default {
       }
     }
 
+    const logout = async () => {
+        const response = await http.post("/logout");
+        if (response.status === 200) {
+            router.push("/auth");
+        }
+    }
+
     return {
       user,
       profile,
-      updateProfile
+      updateProfile,
+      logout
     };
   }
 };
