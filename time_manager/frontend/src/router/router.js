@@ -4,8 +4,9 @@ import WorkingTimes from '../components/WorkingTimes.vue'
 import ChartManager from '../components/ChartManager.vue'
 import RoleManager from '../components/RoleManager.vue'
 import PdfViewer from '../components/PdfViewer.vue'
-import ProfileManagement from '../components/ProfileManagement.vue'
+import ProfileManager from '../components/ProfileManager.vue'
 import TeamManager from '../components/TeamManager.vue'
+import HomePage from '../components/HomePage.vue'
 import TeamWorkingTime from '../components/TeamWorkingTime.vue'
 import { useAuthStore } from '../store/auth';
 import { http } from '@/api/network/axios'
@@ -16,7 +17,7 @@ const routes = [
 		 * This path contains every pages that aren't locked behind the signin.
 		 * This includes, hero, signin, signup, about and that's it.
 		 */
-		path: '/',
+		path: '/homepage',
 		children: [
 			{ path: '', redirect: "auth"},
 			{
@@ -39,10 +40,11 @@ const routes = [
 			{ path: '/app/charts', component: ChartManager },
 			{ path: '/app/tutorial', component: PdfViewer, props: { pdfFilePath: 'tutoriel.pdf' } },
 			{ path: '/app/roles', component: RoleManager },
+			{path : '/app/homepage', component: HomePage},
 
 			{
-				path: '/profile',
-				component: ProfileManagement,
+				path: '/app/profile',
+				component: ProfileManager,
 			},
 			{
 				path: '/roles',
