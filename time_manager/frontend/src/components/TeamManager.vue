@@ -104,17 +104,45 @@
     <div v-else-if="currentTab === 'clock'" class="clock-management">
       <!-- Votre code existant pour le pointage -->
       <div v-if="selectedTeamId" class="flex justify-center mb-8">
-        <button
-          @click="toggleTeamClock"
-          :class="[
-            'px-8 py-4 rounded-full text-white font-semibold transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2',
-            isTeamClockIn ? 'bg-red-500 hover:bg-red-600 focus:ring-red-500' : 'bg-green-500 hover:bg-green-600 focus:ring-green-500'
-          ]"
-        >
-          <ClockIcon class="inline-block mr-2 h-6 w-6" />
-          {{ isTeamClockIn ? 'Arrêter le travail pour l\'équipe' : 'Commencer le travail pour l\'équipe' }}
-        </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+            <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+                Heure de début
+            </label>
+            <input
+                v-model="currentWorkingTime.start"
+                type="datetime-local"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200"
+                required
+            />
+            </div>
+            <div class="space-y-2">
+            <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+                Heure de fin
+            </label>
+            <input
+                v-model="currentWorkingTime.end"
+                type="datetime-local"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200"
+                required
+            />
+            </div>
+
+        </div>
       </div>
+        <button
+         v-if="selectedTeamId"
+          type="submit"
+          @click="addTeamClock"
+          class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2.5 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm hover:shadow-md"
+        >
+          <span v-if="!isEditing">Ajouter</span>
+          <span v-else>Mettre à jour</span>
+        </button>
 
       <!-- Sélection d'équipe -->
       <div class="mb-6">
@@ -201,7 +229,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { ClockIcon, PlusIcon, EditIcon, TrashIcon, UsersIcon, XIcon } from 'lucide-vue-next'
+import { PlusIcon, EditIcon, TrashIcon, UsersIcon, XIcon } from 'lucide-vue-next'
 import { http } from '@/api/network/axios'
 
 // État des onglets
@@ -210,6 +238,11 @@ const tabs = [
   { id: 'clock', name: 'Pointage d\'équipe' }
 ]
 const currentTab = ref('teams')
+const currentWorkingTime = ref({
+	start: null,
+	end: null
+})
+const isEditing = ref(false);
 
 // Nouvelles données pour la gestion des équipes
 const newTeam = ref({ name: '' })
@@ -274,7 +307,7 @@ const deleteTeam = async (teamId) => {
 const teams = ref([])
 const selectedTeamId = ref('')
 const teamMembers = ref([])
-const isTeamClockIn = ref(false)
+// const isTeamClockIn = ref(false)
 
 // Récupération des équipes
 const fetchTeams = async () => {
@@ -312,14 +345,34 @@ const getTeamMembers = async () => {
 }
 
 // Pointage pour toute l'équipe
-const toggleTeamClock = async () => {
-  try {
-    const response = await http.post(`/teams/${selectedTeamId.value}/clock`)
-    isTeamClockIn.value = response.data.status === 'clocked in'
-    await getTeamMembers()
-  } catch (error) {
-    console.error('Erreur lors du pointage d\'équipe:', error)
-  }
+const addTeamClock = async () => {
+    try {
+        if (currentWorkingTime.value.start !== null && currentWorkingTime.value.end !== null) {
+            const start = new Date(currentWorkingTime.value.start);
+            const end = new Date(currentWorkingTime.value.end);
+            const { dayHours, nightHours, overtimeHours } = calculateHours(
+                start,
+                end
+            );
+            const team = teams.value.find((elem) => elem.id === selectedTeamId.value)
+            team.users.forEach(async (element) => {
+                await http.post("/workingtimes", {
+                    working_time: {
+                        start: start.toISOString(),
+                        end: end.toISOString(),
+                        user_id: element.id,
+                        day_hours: dayHours,
+                        night_hours: nightHours,
+                        overtime_hours: overtimeHours,
+                    },
+                });
+            })
+            currentWorkingTime.value.start = null;
+            currentWorkingTime.value.end = null;
+        }
+    } catch (error) {
+        console.error('Erreur lors du pointage d\'équipe:', error)
+    }
 }
 
 const showMemberModal = ref(false)
@@ -382,6 +435,46 @@ const removeMember = async (userId) => {
 onMounted(() => {
   fetchTeams()
 })
+
+function calculateHours(start, end) {
+      const NIGHT_START = 22;
+      const NIGHT_END = 6;
+      const MAX_HOURS = 8;
+
+      let totalNightHours = 0;
+      let totalDayHours = 0;
+      let current = new Date(start);
+
+      while (current < end) {
+        const nextHour = new Date(current);
+        nextHour.setHours(current.getHours() + 1, 0, 0, 0);
+
+        if (nextHour > end) {
+          nextHour.setTime(end.getTime());
+        }
+
+        const isNightTime =
+          current.getHours() >= NIGHT_START || current.getHours() < NIGHT_END;
+        const hoursWorked = (nextHour - current) / (1000 * 60 * 60);
+
+        if (isNightTime) {
+          totalNightHours += hoursWorked;
+        } else {
+          totalDayHours += hoursWorked;
+        }
+
+        current = nextHour;
+      }
+
+      const totalHours = totalDayHours + totalNightHours;
+      const overtimeHours = totalHours > MAX_HOURS ? totalHours - MAX_HOURS : 0;
+
+      return {
+        dayHours: Number(totalDayHours.toFixed(2)),
+        nightHours: Number(totalNightHours.toFixed(2)),
+        overtimeHours: Number(overtimeHours.toFixed(2)),
+      };
+    }
 </script>
 
 
