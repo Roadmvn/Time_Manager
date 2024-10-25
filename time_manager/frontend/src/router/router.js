@@ -39,6 +39,7 @@ const routes = [
 			{ path: '/app/charts', component: ChartManager },
 			{ path: '/app/tutorial', component: PdfViewer, props: { pdfFilePath: 'tutoriel.pdf' } },
 			{ path: '/app/roles', component: RoleManager },
+			
 			{
 				path: '/profile',
 				component: ProfileManagement,
