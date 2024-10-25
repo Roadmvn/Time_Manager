@@ -1,6 +1,5 @@
 <template>
   <div class="role-manager bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 max-w-4xl mx-auto">
-
     <div class="relative mb-8">
       <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg -m-2"></div>
       <h2 class="relative text-3xl font-bold text-gray-800 dark:text-white">
@@ -11,6 +10,7 @@
       </h2>
     </div>
 
+    <!-- Recherche -->
     <div class="mb-8">
       <div class="flex flex-col md:flex-row gap-4">
         <div class="flex-1 group">
@@ -32,170 +32,137 @@
               </svg>
             </span>
           </div>
-
-          <transition
-            enter-active-class="transition ease-out duration-200"
-            enter-from-class="opacity-0 transform -translate-y-2"
-            enter-to-class="opacity-100 transform translate-y-0"
-            leave-active-class="transition ease-in duration-150"
-            leave-from-class="opacity-100 transform translate-y-0"
-            leave-to-class="opacity-0 transform -translate-y-2"
-          >
-            <div v-if="searchQuery" class="mt-2 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-              <span class="flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                {{ filteredUsers.length }} résultat(s) trouvé(s)
-              </span>
-              <span class="text-gray-400">pour "{{ searchQuery }}"</span>
-            </div>
-          </transition>
         </div>
       </div>
     </div>
 
-    <transition
-      enter-active-class="transition-opacity duration-300"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition-opacity duration-300"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div v-if="loading" class="flex justify-center items-center py-12">
-        <div class="relative">
-          <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500/20"></div>
-          <div class="absolute top-0 left-0 animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
-        </div>
+    <!-- Tableau responsive -->
+    <div v-if="!loading && !error && filteredUsers.length > 0">
+      <!-- Affichage en tableau pour les écrans moyens et grands -->
+      <div class="hidden sm:block">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-800/50">
+            <tr>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Utilisateur
+              </th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Email
+              </th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Rôle actuel
+              </th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
+            <template v-for="user in filteredUsers">
+              <tr
+                v-if="user.role !== 'admin'"
+                :key="user.id"
+                class="transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                :class="{ 'opacity-50': updatingUsers.includes(user.id) }">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-medium">
+                      {{ user.username.charAt(0).toUpperCase() }}
+                    </div>
+                    <div class="ml-3">
+                      <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ user.username }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-3 py-1 text-xs font-semibold rounded-full inline-flex items-center gap-1"
+                        :class="{
+                          'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300': user.role === 'user',
+                          'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300': user.role === 'manager'
+                        }">
+                    <span class="w-1.5 h-1.5 rounded-full"
+                          :class="{
+                            'bg-blue-500': user.role === 'user',
+                            'bg-green-500': user.role === 'manager'
+                          }">
+                    </span>
+                    {{ formatRole(user.role) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <select
+                    :value="user.role"
+                    @change="(e) => updateUserRole(user, e.target.value)"
+                    :disabled="updatingUsers.includes(user.id)"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                           transition-colors duration-200
+                           focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+                           dark:bg-gray-700 dark:border-gray-600 dark:text-white
+                           disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option v-for="role in availableRoles" :key="role.value" :value="role.value">
+                      {{ role.label }}
+                    </option>
+                  </select>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
       </div>
-    </transition>
 
-    <transition
-      enter-active-class="transition-all duration-300"
-      enter-from-class="opacity-0 transform -translate-y-4"
-      enter-to-class="opacity-100 transform translate-y-0"
-      leave-active-class="transition-all duration-200"
-      leave-from-class="opacity-100 transform translate-y-0"
-      leave-to-class="opacity-0 transform -translate-y-4"
-    >
-      <div v-if="error" class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded-r-lg mb-6" role="alert">
-        <div class="flex items-center gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
-          <div>
-            <p class="font-medium text-red-800 dark:text-red-200">Erreur!</p>
-            <p class="text-sm text-red-700 dark:text-red-300">{{ error }}</p>
+      <!-- Affichage en cartes pour les petits écrans -->
+      <div class="sm:hidden space-y-4">
+        <div v-for="user in filteredUsers" :key="user.id" class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 shadow-md transition-all duration-300 hover:shadow-lg">
+          <div class="flex items-center mb-2">
+            <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-medium">
+              {{ user.username.charAt(0).toUpperCase() }}
+            </div>
+            <div class="ml-3">
+              <p class="text-lg font-medium text-gray-800 dark:text-gray-100">{{ user.username }}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</p>
+            </div>
+          </div>
+
+          <div class="mt-2">
+            <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Rôle actuel :</p>
+            <span class="px-3 py-1 text-xs font-semibold rounded-full inline-flex items-center gap-1"
+                  :class="{
+                    'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300': user.role === 'user',
+                    'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300': user.role === 'manager'
+                  }">
+              <span class="w-1.5 h-1.5 rounded-full"
+                    :class="{
+                      'bg-blue-500': user.role === 'user',
+                      'bg-green-500': user.role === 'manager'
+                    }">
+              </span>
+              {{ formatRole(user.role) }}
+            </span>
+          </div>
+
+          <div class="mt-4">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Changer de rôle :</label>
+            <select
+              :value="user.role"
+              @change="(e) => updateUserRole(user, e.target.value)"
+              :disabled="updatingUsers.includes(user.id)"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                     transition-colors duration-200
+                     focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+                     dark:bg-gray-700 dark:border-gray-600 dark:text-white
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option v-for="role in availableRoles" :key="role.value" :value="role.value">
+                {{ role.label }}
+              </option>
+            </select>
           </div>
         </div>
       </div>
-    </transition>
-
-    <transition
-      enter-active-class="transition-all duration-300"
-      enter-from-class="opacity-0 scale-95"
-      enter-to-class="opacity-100 scale-100"
-      leave-active-class="transition-all duration-200"
-      leave-from-class="opacity-100 scale-100"
-      leave-to-class="opacity-0 scale-95"
-    >
-      <div v-if="!loading && !error && filteredUsers.length === 0"
-           class="text-center py-12 px-4 rounded-lg bg-gray-50 dark:bg-gray-800/50">
-        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <p class="text-xl font-medium text-gray-700 dark:text-gray-300">Aucun utilisateur trouvé</p>
-        <p class="mt-2 text-gray-500 dark:text-gray-400">Essayez de modifier vos critères de recherche</p>
-      </div>
-    </transition>
-
-    <div v-if="!loading && !error && filteredUsers.length > 0" class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-800/50">
-          <tr>
-            <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Utilisateur
-            </th>
-            <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Email
-            </th>
-            <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Rôle actuel
-            </th>
-            <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
-            <template v-for="user in filteredUsers">
-          <tr
-              v-if="user.role !== 'admin'"
-              :key="user.id"
-              class="transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-              :class="{ 'opacity-50': updatingUsers.includes(user.id) }">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <div class="h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-medium">
-                  {{ user.username.charAt(0).toUpperCase() }}
-                </div>
-                <div class="ml-3">
-                  <span class="text-sm font-medium text-gray-900 dark:text-gray-100" v-html="highlightMatch(user.username)"></span>
-                </div>
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span class="text-sm text-gray-500 dark:text-gray-400" v-html="highlightMatch(user.email)"></span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span class="px-3 py-1 text-xs font-semibold rounded-full inline-flex items-center gap-1"
-                :class="{
-                  'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300': user.role === 'user',
-                  'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300': user.role === 'manager'
-                }">
-                <span class="w-1.5 h-1.5 rounded-full"
-                  :class="{
-                    'bg-blue-500': user.role === 'user',
-                    'bg-green-500': user.role === 'manager'
-                  }">
-                </span>
-                {{ formatRole(user.role) }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="relative">
-                <select
-                  :value="user.role"
-                  @change="(e) => updateUserRole(user, e.target.value)"
-                  :disabled="updatingUsers.includes(user.id)"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
-                         transition-colors duration-200
-                         focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
-                         dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                         disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <option v-for="role in availableRoles" :key="role.value" :value="role.value">
-                    {{ role.label }}
-                  </option>
-                </select>
-                <transition
-                  enter-active-class="transition-opacity duration-200"
-                  enter-from-class="opacity-0"
-                  enter-to-class="opacity-100"
-                  leave-active-class="transition-opacity duration-200"
-                  leave-from-class="opacity-100"
-                  leave-to-class="opacity-0"
-                >
-                  <div v-if="updatingUsers.includes(user.id)"
-                       class="absolute right-2 top-1/2 transform -translate-y-1/2">
-                    <div class="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
-                  </div>
-                </transition>
-              </div>
-            </td>
-          </tr>
-        </template>
-        </tbody>
-      </table>
     </div>
   </div>
 </template>

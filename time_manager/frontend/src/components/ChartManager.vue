@@ -48,56 +48,56 @@
 
 
     <div class="bg-white dark:bg-gray-800 rounded-lg p-6 mb-8 shadow-md">
-      <div class="flex flex-wrap gap-4 items-end">
+  <div class="flex flex-wrap gap-4 items-end">
+    <div class="flex gap-3">
+      <button
+        @click="showAllData"
+        class="px-6 py-2.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 transition-all duration-200 font-medium"
+      >
+        Tout
+      </button>
+      <button
+        @click="showCurrentMonthData"
+        class="px-6 py-2.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 transition-all duration-200 font-medium"
+      >
+        Ce mois
+      </button>
+    </div>
 
-        <div class="flex gap-3">
-          <button
-            @click="showAllData"
-            class="px-6 py-2.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 transition-all duration-200 font-medium"
-          >
-            Tout
-          </button>
-          <button
-            @click="showCurrentMonthData"
-            class="px-6 py-2.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 transition-all duration-200 font-medium"
-          >
-            Ce mois
-          </button>
-        </div>
-
-
-        <div class="flex gap-4 flex-1">
-          <div class="flex-1">
-            <label for="start-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Date de début
-            </label>
-            <input
-              id="start-date"
-              v-model="startDate"
-              type="date"
-              class="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200"
-            />
-          </div>
-          <div class="flex-1">
-            <label for="end-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Date de fin
-            </label>
-            <input
-              id="end-date"
-              v-model="endDate"
-              type="date"
-              class="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200"
-            />
-          </div>
-          <button
-            @click="applyDateFilter"
-            class="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-200 font-medium self-end"
-          >
-            Appliquer
-          </button>
-        </div>
+    <div class="flex flex-wrap gap-4 items-end w-full md:w-auto">
+      <div class="flex-1 min-w-[150px]">
+        <label for="start-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Date de début
+        </label>
+        <input
+          id="start-date"
+          v-model="startDate"
+          type="date"
+          class="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200"
+        />
+      </div>
+      <div class="flex-1 min-w-[150px]">
+        <label for="end-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Date de fin
+        </label>
+        <input
+          id="end-date"
+          v-model="endDate"
+          type="date"
+          class="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200"
+        />
+      </div>
+      <div class="flex justify-end w-full md:w-auto">
+        <button
+          @click="applyDateFilter"
+          class="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-200 font-medium"
+        >
+          Appliquer
+        </button>
       </div>
     </div>
+  </div>
+</div>
 
 
     <div v-if="selectedUserId" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
