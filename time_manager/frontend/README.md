@@ -85,3 +85,5 @@ Les contributions sont les bienvenues ! Veuillez suivre ces étapes :
 
    npm install @vue/cli-plugin-babel
    npm install @vue/cli-plugin-babel --save-dev
+
+   npm install xlsx

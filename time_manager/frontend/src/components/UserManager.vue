@@ -25,8 +25,10 @@
     <!-- Formulaire pour ajouter/modifier un utilisateur -->
     <form @submit.prevent="submitUser" class="space-y-4">
       <div class="flex flex-wrap -mx-2">
-        <div class="w-full md:w-1/2 px-2 mb-4 md:mb-0">
-          <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom d'utilisateur</label>
+        <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
+          <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Nom d'utilisateur
+          </label>
           <input
             id="username"
             v-model="currentUser.username"
@@ -35,8 +37,10 @@
             required
           >
         </div>
-        <div class="w-full md:w-1/2 px-2">
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+        <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Email
+          </label>
           <input
             id="email"
             v-model="currentUser.email"
@@ -44,6 +48,21 @@
             type="email"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
+          >
+        </div>
+        <div class="w-full md:w-1/3 px-2">
+          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Mot de passe
+            <span v-if="!isEditing" class="text-red-500">*</span>
+            <span v-else class="text-xs text-gray-500">(laisser vide pour ne pas modifier)</span>
+          </label>
+          <input
+            id="password"
+            v-model="currentUser.password"
+            placeholder="Mot de passe"
+            type="password"
+            :required="!isEditing"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           >
         </div>
       </div>
@@ -76,8 +95,19 @@ export default {
   },
   setup() {
     const users = ref([])
-    const currentUser = ref({ username: '', email: '' })
+    const currentUser = ref({ username: '', email: '', password: '' })
     const isEditing = ref(false)
+    const errorMessage = ref('')
+
+    // Validation du mot de passe
+    const validatePassword = (password) => {
+      if (!password) return false
+      const minLength = 8
+      const hasUpperCase = /[A-Z]/.test(password)
+      const hasLowerCase = /[a-z]/.test(password)
+      const hasNumbers = /\d/.test(password)
+      return password.length >= minLength && hasUpperCase && hasLowerCase && hasNumbers
+    }
 
     onMounted(() => {
       getUsers()
@@ -94,23 +124,50 @@ export default {
 
     async function createUser() {
       try {
-        await http.post('/users', {"user": currentUser.value})
+        if (!validatePassword(currentUser.value.password)) {
+          errorMessage.value = 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre'
+          return
+        }
+
+        await http.post('/users', {
+          user: {
+            username: currentUser.value.username,
+            email: currentUser.value.email,
+            password: currentUser.value.password
+          }
+        })
         await getUsers()
-        currentUser.value.username = "";
-		currentUser.value.email = "";
+        currentUser.value = { username: '', email: '', password: '' }
+        errorMessage.value = ''
       } catch (error) {
         console.error('Erreur lors de la création de l\'utilisateur:', error)
+        errorMessage.value = 'Erreur lors de la création de l\'utilisateur'
       }
     }
 
     async function updateUser() {
       try {
-        await http.put(`/users/${currentUser.value.id}`, {"user": {"username": currentUser.value.username, "email": currentUser.value.email} })
+        const userData = {
+          username: currentUser.value.username,
+          email: currentUser.value.email
+        }
+        
+        if (currentUser.value.password) {
+          if (!validatePassword(currentUser.value.password)) {
+            errorMessage.value = 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre'
+            return
+          }
+          userData.password = currentUser.value.password
+        }
+
+        await http.put(`/users/${currentUser.value.id}`, { user: userData })
         await getUsers()
-        currentUser.value = { username: '', email: '' }
+        currentUser.value = { username: '', email: '', password: '' }
         isEditing.value = false
+        errorMessage.value = ''
       } catch (error) {
         console.error('Erreur lors de la mise à jour de l\'utilisateur:', error)
+        errorMessage.value = 'Erreur lors de la mise à jour de l\'utilisateur'
       }
     }
 
@@ -154,6 +211,7 @@ export default {
       users,
       currentUser,
       isEditing,
+      errorMessage,
       getUsers,
       createUser,
       updateUser,
@@ -166,3 +224,4 @@ export default {
   }
 }
 </script>
+
