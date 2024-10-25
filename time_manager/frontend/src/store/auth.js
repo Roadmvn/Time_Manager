@@ -15,12 +15,12 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(email, password) {
       try {
-        const response = await http.post('/login', {"email": email, "password": password })
-		console.log("Response", response);
-		if (response.status !== 200) throw new Error('The returned status was not expected');
+        const response = await http.post('/login', { "email": email, "password": password })
+        console.log("Response", response);
+        if (response.status !== 200) throw new Error('The returned status was not expected');
 
-		this.getCurrentUser();
-		return true;
+        this.getCurrentUser();
+        return true;
 
       } catch (error) {
         console.error('Login failed:', error)
@@ -37,24 +37,29 @@ export const useAuthStore = defineStore('auth', {
         throw error
       }
     },
-	async register(username, email, password) {
-		try {
-			const response = await http.post("/signup", {"user": {username, email, password}})
-			if (response.status === 201) {
-				return true;
-			}
-			console.log("Response", response);
-		} catch (err) {
-			console.error("signup failed", err)
-			throw err
-		}
+    async register(username, email, password) {
+      try {
+        const response = await http.post("/signup", { "user": { username, email, password } })
+        if (response.status === 201) {
+          return true;
+        }
+        console.log("Response", response);
+      } catch (err) {
+        console.error("signup failed", err)
+        throw err
+      }
 
-	},
-	async getCurrentUser() {
-		const response = await http.get("/users/me")
-		console.log("RESPONSE", response);
-		this.isAuth = true;
-		this.user = response.data.user
-	}
+    },
+    async getCurrentUser() {
+      const response = await http.get("/users/me")
+      console.log("RESPONSE", response);
+      this.isAuth = true;
+      this.user = response.data.user
+    },
+  
+    setUser(userData) {
+      this.user = userData;
+    }
   }
+
 })

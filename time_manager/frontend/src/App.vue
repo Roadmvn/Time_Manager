@@ -148,6 +148,12 @@ export default {
     const role = computed(() => user.value.role)
 
     const navItemsAdmin = [
+       {
+        name: 'Home',
+        path: '/app/homepage',
+        ariaLabel: 'Aller à la page d\'accueil',
+        icon: '🏠'
+      },
       {
         name: 'Utilisateurs',
         path: '/app/users',
@@ -183,9 +189,21 @@ export default {
         path: '/app/tutorial',
         ariaLabel: 'Aller à la page du tutoriel',
         icon: '📚'
+      },
+       {
+        name: 'Profile',
+        path: '/app/profile',
+        ariaLabel: 'Aller à la page de profil',
+        icon: '👤'
       }
     ]
     const navItemsManager = [
+       {
+        name: 'Home',
+        path: '/app/homepage',
+        ariaLabel: 'Aller à la page d\'accueil',
+        icon: '🏠'
+      },
       {
         name: 'Utilisateurs',
         path: '/app/users',
@@ -215,9 +233,21 @@ export default {
         path: '/app/tutorial',
         ariaLabel: 'Aller à la page du tutoriel',
         icon: '📚'
+      },
+      {
+        name: 'Profile',
+        path: '/app/profile',
+        ariaLabel: 'Aller à la page de profil',
+        icon: '👤'
       }
     ]
     const navItemsUsers = [
+      {
+        name: 'Home',
+        path: '/app/homepage',
+        ariaLabel: 'Aller à la page d\'accueil',
+        icon: '🏠'
+      },
       {
         name: 'Heures de travail',
         path: '/app/working-times',
@@ -235,6 +265,12 @@ export default {
         path: '/app/tutorial',
         ariaLabel: 'Aller à la page du tutoriel',
         icon: '📚'
+      },
+       {
+        name: 'Profile',
+        path: '/app/profile',
+        ariaLabel: 'Aller à la page de profil',
+        icon: '👤'
       }
     ]
 
