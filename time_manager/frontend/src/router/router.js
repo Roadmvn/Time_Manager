@@ -34,12 +34,12 @@ const routes = [
 		path: '/app',
 		children: [
 			{ path: '/app', redirect: '/app/users' },
-			{ path: '/app/users', component: UserManager },
+			{ path: '/app/users', component: UserManager},
 			{ path: '/app/working-times', component: WorkingTimes },
 			{ path: '/app/charts', component: ChartManager },
 			{ path: '/app/tutorial', component: PdfViewer, props: { pdfFilePath: 'tutoriel.pdf' } },
 			{ path: '/app/roles', component: RoleManager },
-			
+
 			{
 				path: '/profile',
 				component: ProfileManagement,
@@ -76,7 +76,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
 	const authStore = useAuthStore();
 	const isAuth = authStore.isAuth;
-	const userRole = authStore.userRole;
+	const userRole = authStore.user?.role;
 
 	if (to.matched.some(record => record.meta.requiresAuth)) {
 		if (!isAuth) {
@@ -85,6 +85,7 @@ router.beforeEach(async (to, from, next) => {
 				console.log("RESPONSE", resp);
 				if (resp.status === 200) {
 					authStore.isAuth = true;
+					authStore.user = resp.data.user;
 					return next()
 				} else if(resp.status === 401) {
 					authStore.isAuth = false;

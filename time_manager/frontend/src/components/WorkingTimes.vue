@@ -53,7 +53,7 @@
 
     <div class="mb-8">
       <div class="group">
-        <div class="relative transition-all duration-300 rounded-lg">
+        <div class="relative transition-all duration-300 rounded-lg" v-if="role !== 'user'">
           <select
             v-model="selectedUserId"
             @change="getWorkingTimes"
@@ -166,7 +166,7 @@
             >
               Modifier
             </button>
-            <button
+            <button v-if="role ==='admin'"
               @click="deleteWorkingTime(time.id)"
               class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
             >
@@ -218,6 +218,7 @@
 import { ref, onMounted, watch, computed } from "vue";
 import { http } from "@/api/network/axios";
 import * as XLSX from "xlsx";
+import { useAuthStore } from '@/store/auth';
 
 export default {
   name: "WorkingTimes",
@@ -228,12 +229,21 @@ export default {
     const users = ref([]);
     const selectedUserId = ref("");
     const nightShiftAlert = ref(false);
+    const authStore = useAuthStore();
+	const user = computed(() => authStore.user);
+    const role = computed(() => user.value.role)
 
     const currentPage = ref(1);
     const pageSize = ref(6);
 
     onMounted(() => {
-      getUsers();
+        if (role.value === "user") {
+            selectedUserId.value = user.value.id;
+            getWorkingTimes()
+        } else {
+            getUsers();
+        }
+      console.log("AUTH", role.value);
     });
 
     watch(selectedUserId, (newValue) => {
@@ -636,6 +646,8 @@ export default {
       downloadTimesheet,
       nightShiftAlert,
       editWorkingTime,
+      authStore,
+      role
     };
   },
 };

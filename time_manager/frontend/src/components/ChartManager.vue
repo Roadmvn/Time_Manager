@@ -9,10 +9,10 @@
       </p>
     </div>
 
-   
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      
-      <div class="space-y-2">
+
+      <div class="space-y-2" v-if="role !== 'user'">
         <label for="user-select" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
           Utilisateur
         </label>
@@ -29,7 +29,7 @@
         </select>
       </div>
 
-     
+
       <div class="space-y-2">
         <label for="chart-type" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
           Type de visualisation
@@ -46,18 +46,18 @@
       </div>
     </div>
 
-    
+
     <div class="bg-white dark:bg-gray-800 rounded-lg p-6 mb-8 shadow-md">
       <div class="flex flex-wrap gap-4 items-end">
-        
+
         <div class="flex gap-3">
-          <button 
-            @click="showAllData" 
+          <button
+            @click="showAllData"
             class="px-6 py-2.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 transition-all duration-200 font-medium"
           >
             Tout
           </button>
-          <button 
+          <button
             @click="showCurrentMonthData"
             class="px-6 py-2.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 transition-all duration-200 font-medium"
           >
@@ -65,7 +65,7 @@
           </button>
         </div>
 
-       
+
         <div class="flex gap-4 flex-1">
           <div class="flex-1">
             <label for="start-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -89,7 +89,7 @@
               class="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200"
             />
           </div>
-          <button 
+          <button
             @click="applyDateFilter"
             class="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-200 font-medium self-end"
           >
@@ -99,9 +99,9 @@
       </div>
     </div>
 
-   
+
     <div v-if="selectedUserId" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      
+
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 col-span-full">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Vue d'ensemble des heures</h3>
         <div class="chart-container">
@@ -109,7 +109,7 @@
         </div>
       </div>
 
-      
+
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Top 5 des jours les plus travaillés</h3>
         <div class="chart-container">
@@ -117,7 +117,7 @@
         </div>
       </div>
 
-      
+
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Moyenne mensuelle des heures</h3>
         <div class="chart-container">
@@ -126,9 +126,9 @@
       </div>
     </div>
 
-    
-    <div 
-      v-else 
+
+    <div
+      v-else
       class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow-lg"
     >
       <p class="text-gray-500 dark:text-gray-400">
@@ -139,9 +139,10 @@
 </template>
 
 <script>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { http } from "@/api/network/axios";
 import Chart from 'chart.js/auto';
+import { useAuthStore } from '@/store/auth';
 
 export default {
   name: 'ChartManager',
@@ -158,6 +159,9 @@ export default {
     let chart = null;
     let mostWorkedChart = null;
     let averageMonthlyChart = null;
+    const authStore = useAuthStore();
+    const user = computed(() => authStore.user);
+    const role = computed(() => user.value.role);
 
     const chartType = ref('bar');
 
@@ -190,7 +194,7 @@ export default {
           }));
           filteredData.value = [...chartData.value];
           processChartData();
-          createAdditionalCharts(); 
+          createAdditionalCharts();
         } else {
           console.error('Les heures de travail n\'ont pas été trouvées dans la réponse:', response);
         }
@@ -254,7 +258,7 @@ export default {
 
       const ctx = chartCanvas.value.getContext('2d');
 
- 
+
       const colors = {
         day: 'rgba(88, 180, 255, 0.7)',
         night: 'rgba(255, 111, 111, 0.7)',
@@ -339,9 +343,9 @@ export default {
     };
 
     const createMostWorkedHoursChart = () => {
-      const sortedData = [...filteredData.value].sort((a, b) => 
+      const sortedData = [...filteredData.value].sort((a, b) =>
         (b.day_hours + b.night_hours + b.overtime_hours) - (a.day_hours + a.night_hours + a.overtime_hours)
-      ).slice(0, 5); 
+      ).slice(0, 5);
 
       const labels = sortedData.map(item => item.date);
       const workedHours = sortedData.map(item => item.day_hours + item.night_hours + item.overtime_hours);
@@ -363,11 +367,11 @@ export default {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          indexAxis: 'y', 
+          indexAxis: 'y',
           scales: {
             x: {
               beginAtZero: true,
-              display: false, 
+              display: false,
             },
             y: {
               display: false,
@@ -407,9 +411,14 @@ export default {
       });
     };
 
-   
+
     onMounted(() => {
-      getUsers();
+        if (role.value === "user") {
+            selectedUserId.value = user.value.id;
+            fetchChartData();
+        } else {
+            getUsers();
+        }
     });
 
     watch(selectedUserId, () => {
@@ -427,7 +436,9 @@ export default {
       endDate,
       showAllData,
       showCurrentMonthData,
-      applyDateFilter
+      applyDateFilter,
+      user,
+      role
     };
   },
 };

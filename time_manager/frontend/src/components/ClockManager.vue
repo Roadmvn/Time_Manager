@@ -1,10 +1,9 @@
 <template>
   <div class="clock-manager bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 max-w-md mx-auto">
     <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white border-b pb-2">Gestion du temps</h2>
-    
     <div class="flex flex-col items-center">
-      <button 
-        @click="toggleClock" 
+      <button
+        @click="toggleClock"
         :class="[
           'px-6 py-3 rounded-full text-white font-semibold transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2',
           isClockIn ? 'bg-red-500 hover:bg-red-600 focus:ring-red-500' : 'bg-green-500 hover:bg-green-600 focus:ring-green-500'
@@ -13,10 +12,10 @@
         <ClockIcon class="inline-block mr-2 h-5 w-5" />
         {{ isClockIn ? 'Arrêter le travail' : 'Commencer le travail' }}
       </button>
-      
+
       <div class="mt-8 text-center">
         <p class="text-xl font-semibold text-gray-700 dark:text-gray-300">
-          Statut : 
+          Statut :
           <span :class="isClockIn ? 'text-green-500' : 'text-red-500'">
             {{ isClockIn ? 'Au travail' : 'Pas au travail' }}
           </span>

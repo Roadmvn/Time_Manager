@@ -5,7 +5,7 @@
       <header class="fixed top-0 left-0 right-0 backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-800 z-50 w-full" v-if="isAuthenticated">
         <nav class="container mx-auto px-4">
           <div class="flex items-center justify-between h-16">
-      
+
             <router-link to="/" class="flex items-center space-x-2">
               <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                 <span class="text-white font-bold">T</span>
@@ -37,17 +37,45 @@
                 v-show="isMenuOpen || !isMobile"
                 class="md:flex md:items-center md:space-x-1 absolute md:static left-0 right-0 top-16 md:top-0 bg-white dark:bg-gray-900 md:bg-transparent shadow-md md:shadow-none rounded-b-lg md:rounded-none"
               >
-                <li v-for="item in navItems" :key="item.path">
-                  <router-link
-                    :to="item.path"
-                    class="flex items-center space-x-2 px-4 py-3 md:py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all duration-200"
-                    :aria-label="item.ariaLabel"
-                    @click="closeMenu"
-                  >
-                    <span class="text-lg">{{ item.icon }}</span>
-                    <span>{{ item.name }}</span>
-                  </router-link>
-                </li>
+              <template v-if="role === 'user'">
+                    <li  v-for="item in navItemsUsers" :key="item.path">
+                        <router-link
+                            :to="item.path"
+                            class="flex items-center space-x-2 px-4 py-3 md:py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all duration-200"
+                            :aria-label="item.ariaLabel"
+                            @click="closeMenu"
+                        >
+                            <span class="text-lg">{{ item.icon }}</span>
+                            <span>{{ item.name }}</span>
+                        </router-link>
+                    </li>
+                </template>
+                <template v-else-if="role === 'manager'">
+                    <li  v-for="item in navItemsManager" :key="item.path">
+                        <router-link
+                            :to="item.path"
+                            class="flex items-center space-x-2 px-4 py-3 md:py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all duration-200"
+                            :aria-label="item.ariaLabel"
+                            @click="closeMenu"
+                        >
+                            <span class="text-lg">{{ item.icon }}</span>
+                            <span>{{ item.name }}</span>
+                        </router-link>
+                    </li>
+                </template>
+                <template v-else>
+                    <li  v-for="item in navItemsAdmin" :key="item.path">
+                        <router-link
+                            :to="item.path"
+                            class="flex items-center space-x-2 px-4 py-3 md:py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all duration-200"
+                            :aria-label="item.ariaLabel"
+                            @click="closeMenu"
+                        >
+                            <span class="text-lg">{{ item.icon }}</span>
+                            <span>{{ item.name }}</span>
+                        </router-link>
+                    </li>
+                </template>
               </ul>
             </transition>
           </div>
@@ -72,24 +100,24 @@
     </div>
 
     <!-- Footer -->
-    <footer 
-      v-if="isAuthenticated" 
+    <footer
+      v-if="isAuthenticated"
       class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 py-4 mt-8 w-full"
     >
       <div class="container mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
           <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
             <span>Si vous avez un problème, contactez un admin au  :</span>
-            <a 
-              href="tel:+33612345678" 
+            <a
+              href="tel:+33612345678"
               class="font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               +33 6 12 34 56 78
             </a>
           </div>
           <div>
-            <router-link 
-              to="/app/tutorial" 
+            <router-link
+              to="/app/tutorial"
               class="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
             >
               <span>Comment utiliser le site ?</span>
@@ -116,41 +144,95 @@ export default {
     const isAuthenticated = computed(() => authStore.isAuth)
     const isAdmin = computed(() => authStore.userRole === 'admin')
     const isManagerOrAdmin = computed(() => ['manager', 'admin'].includes(authStore.userRole))
+	const user = computed(() => authStore.user);
+    const role = computed(() => user.value.role)
 
-    const navItems = [
-      { 
-        name: 'Utilisateurs', 
-        path: '/app/users', 
+    const navItemsAdmin = [
+      {
+        name: 'Utilisateurs',
+        path: '/app/users',
         ariaLabel: 'Aller à la page des utilisateurs',
-        icon: '👥'
+        icon: '👥',
       },
-      { 
-        name: 'Équipes', 
-        path: '/app/teams', 
+      {
+        name: 'Équipes',
+        path: '/app/teams',
         ariaLabel: 'Aller à la page des équipes',
         icon: '🤝'
       },
-      { 
-        name: 'Heures de travail', 
-        path: '/app/working-times', 
+      {
+        name: 'Heures de travail',
+        path: '/app/working-times',
         ariaLabel: 'Aller à la page des heures de travail',
         icon: '⏰'
       },
-      { 
-        name: 'Graphiques', 
-        path: '/app/charts', 
+      {
+        name: 'Graphiques',
+        path: '/app/charts',
         ariaLabel: 'Aller à la page des graphiques',
         icon: '📊'
       },
-      { 
-        name: 'Rôles', 
-        path: '/app/roles', 
+      {
+        name: 'Rôles',
+        path: '/app/roles',
         ariaLabel: 'Aller à la page des rôles et permissions',
         icon: '🔑'
       },
-      { 
-        name: 'Tutoriel', 
-        path: '/app/tutorial', 
+      {
+        name: 'Tutoriel',
+        path: '/app/tutorial',
+        ariaLabel: 'Aller à la page du tutoriel',
+        icon: '📚'
+      }
+    ]
+    const navItemsManager = [
+      {
+        name: 'Utilisateurs',
+        path: '/app/users',
+        ariaLabel: 'Aller à la page des utilisateurs',
+        icon: '👥',
+      },
+      {
+        name: 'Équipes',
+        path: '/app/teams',
+        ariaLabel: 'Aller à la page des équipes',
+        icon: '🤝'
+      },
+      {
+        name: 'Heures de travail',
+        path: '/app/working-times',
+        ariaLabel: 'Aller à la page des heures de travail',
+        icon: '⏰'
+      },
+      {
+        name: 'Graphiques',
+        path: '/app/charts',
+        ariaLabel: 'Aller à la page des graphiques',
+        icon: '📊'
+      },
+      {
+        name: 'Tutoriel',
+        path: '/app/tutorial',
+        ariaLabel: 'Aller à la page du tutoriel',
+        icon: '📚'
+      }
+    ]
+    const navItemsUsers = [
+      {
+        name: 'Heures de travail',
+        path: '/app/working-times',
+        ariaLabel: 'Aller à la page des heures de travail',
+        icon: '⏰'
+      },
+      {
+        name: 'Graphiques',
+        path: '/app/charts',
+        ariaLabel: 'Aller à la page des graphiques',
+        icon: '📊'
+      },
+      {
+        name: 'Tutoriel',
+        path: '/app/tutorial',
         ariaLabel: 'Aller à la page du tutoriel',
         icon: '📚'
       }
@@ -184,12 +266,16 @@ export default {
     return {
       isMenuOpen,
       isMobile,
-      navItems,
+      navItemsAdmin,
+      navItemsManager,
+      navItemsUsers,
       toggleMenu,
       closeMenu,
       isAuthenticated,
       isAdmin,
-      isManagerOrAdmin
+      isManagerOrAdmin,
+      user,
+      role
     }
   }
 }
