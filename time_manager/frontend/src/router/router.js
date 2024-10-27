@@ -17,7 +17,7 @@ const routes = [
 		 * This path contains every pages that aren't locked behind the signin.
 		 * This includes, hero, signin, signup, about and that's it.
 		 */
-		path: '/homepage',
+		path: '/',
 		children: [
 			{ path: '', redirect: "auth"},
 			{

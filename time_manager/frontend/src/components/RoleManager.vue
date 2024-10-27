@@ -259,5 +259,6 @@ const updateUserRole = async (user, newRole) => {
 
 onMounted(() => {
   fetchUsers()
+  highlightMatch()
 })
 </script>

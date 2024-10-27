@@ -13,7 +13,7 @@
             </div>
             <div>
               <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Bienvenue, {{ user.username }} !
+                Bienvenue !
               </h1>
               <p class="mt-2 text-gray-600 dark:text-gray-400">
                 Heureux de vous revoir sur votre TimeManager

@@ -61,7 +61,7 @@ const handleLogin = async () => {
   try {
     const resp = await authStore.login(email.value, password.value)
 	if (resp) {
-		router.push("/app/users")
+		router.push("/app/homepage")
 	}
     // Redirection après connexion réussie
     // router.push('/dashboard')
