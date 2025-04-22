@@ -21,6 +21,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       PGHOST: db
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      SIGNING_SALT: ${SIGNING_SALT}
     depends_on:
       - db
 

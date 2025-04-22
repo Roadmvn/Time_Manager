@@ -24,7 +24,7 @@ config :time_manager, TimeManagerWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "QUvDMqJbMXnZGhL5+dQLAPuI6I9ZoHKNG7xxt9LSaAzNiXAXzQGqtk/opOEP34zC",
+  secret_key_base: System.get_env("SECRET_KEY_BASE") || "placeholder_dev_key_replace_in_production",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:time_manager, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:time_manager, ~w(--watch)]}

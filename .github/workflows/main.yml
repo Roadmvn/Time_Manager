@@ -19,54 +19,13 @@ jobs:
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2
       with:
-        key: |
-          -----BEGIN RSA PRIVATE KEY-----
-          MIIG4wIBAAKCAYEA0tr50rj3YiehgLOFsDFb7oDOgEmI9gLu1oNfGJpznFmwg0XO
-          wpVNXKYCHw9j3nvXm9ZpGYTxijc7lrr9717LsQuQ64+rpFLasCLWTAf0k5r0H/q/
-          ogr1y032ndFoNfqot4ePZG96NmAk+xeYzvGL0EwYmP3agYNGoXRPWYP8T0mlhMpP
-          s5oMzQJpHDqCupKZ7RT2CHZOn8THy5b0pwDN9IgggwanCVDiAvVw52uk6OwbcjpJ
-          4zcFrjMaFUzrr4leY9H0OEFvG6leC12rqIu8cDXccZMWZv2/+7H+NVcMESCJoZCF
-          24O3gyYUP8Ex/I2PE52jx+PqShoywccnAmiZe6IvlVT95Hu+KBBdgVuDOs/MuEcW
-          EeQ5Ut9bXKciS+ZXTIVdb0bGv+I+N5wWl0NtBp9s34v/guFtLLXN3wB7F3p2BDyy
-          +F2eq03GbOBODt46DT1HC0Ylt5woVLmVoBp5KiVutkVV2dO2aXJrc8kHCdvFoU+V
-          DKYZzXft/bTZC1SpAgMBAAECggGASTrl8upseHl9HL68moG6BO5VSbbAS3ifTH8Z
-          wui5aD66EA1pjqjd0mSRbgohTD7Elgn0PHmwjak7F9FfqgfJRHbY4QbnvM1NyEiB
-          FqzYo374dDbY4UVfMjmkghEdWUnx2LPK+D3DOylPDqmWV6EKRtB25oObpMlb+Wz0
-          tgkh0sOoKaM95QmGkpjYuoYTqwqJTQ6vmCbGjbSBE1MdKvcbkGbKq9beolyl8hMe
-          IDGBd6ewrI5T5QbSATscPvOVE0Toku5ON3LsQVkEZSJmCyo7BkA/oYmVD681keA5
-          VOZ4yjzUi1mBguvGFqdF8xToNTqRPju8Bz95p0Wr5fA5xcmXAGTDNYciW2r11f96
-          xu30m+qeu6M8yFRBdqwv+a4pQe4GKEWRba75noiuYCJqmk7bOQ7SsGer5HCNR78x
-          3pPJJctft9aQe7PmeSoDgDhUvjYGWNbfITVs/1/hI9dR5WBPJmZCYj07V5e34zGV
-          QDnM3GqfgUWYQRe5SfbJH5shuaB1AoHBAOl1jeOQVmCqLTAVcXNNWng674/OvWTG
-          penQAR0IbSMJE5i0Ed+gA2hJyNWsNqVnw5IbuyyOzOtbDGHcao7tBgK17bwY8LOY
-          t5xlUTvfSYtFas2O9h5H7XVUHLzDRo3wJgElaM/4bYx1n4cSfVABFxhhYMRgPGGM
-          ZhanwoW7avz5xXMZyUn/m3wwiNfLpeOEt6uAJVjDNvknaTB5oT0Z21Nlx3QKwuPk
-          Q3iFQlBwXEBrGgVhk9iCldypmapVtaa29wKBwQDnNrg2yJtXqFStc6D1Adj4lZ9E
-          Qdxlj0cjCYgnwHsWkFDcOFKY3W1sCh7e/PRMTsk8deHerPrVHBWhvvzDWIVEZo29
-          /V8fFCmGciOa4Lmotfsi1RfY4BBPzEqxxZHvqQ66Zm0W4gWvEuavifBqE1xmF9qx
-          s2yGURVBIHAgjbCbeyC2IwhtonkLOtYDtguCvmzVXrMXIoeTHDxcbMoT6LXJpBPP
-          53vQ0YxZiyhrnvkcVq2/TSapJQ1Ouz3iBLTHSV8CgcEAkCg6mU5DSCVNCefzyhL1
-          zk/2JYKviE7xnFMInPjbC0tLgnuOnducvwTwsqBIjhJovQvKpFT5TEtIdhU451CM
-          6ZeVWRS9bOjcWAJoCuRx8UHIFW41o7Ued9icdiLOqk6j6QlEk0b/vj/TZgCQyJoj
-          vLZEnn4eSs37K/ojL5jvE47X0Z8WoE7pn+IIXdguczM8hvX2Gb1RcMBZP8mbOrOA
-          rxql8o3Ckh4dW4pNzIXVMSHxS2lZddQM3dkMPhX2uR85AoHAIrgLx2YuNWZ4eKdB
-          Rykk3IcTKFu/bZyrMO6wfE+h7Ax1p+vpMz0kvjFy20cepAq8mxCUfyx4aeHSubwF
-          FoxHTrMbm6jdTLxpU9/1yr7uAhB5iox3DUDwEht6J+Gj/VnkdUcGIIaGFfj/nOJY
-          sIUBve7dDwwDQtQQHfxx+eFs4JwHmHIARP49sNr/4gTHC7Xuf8e9mr67nvKBedt4
-          KK8sBQBXXUPESuH8ckG8KxTvETtO0cgTAxkmO2lQbI0KXFZ/AoHABKGUYRwSdF/T
-          aNsI1hg3Y6ZPEKcx/K74djkR3u/fYvH68dVmFROXOHouJle+rPAPCvEPfwHCXoc+
-          1Z88zW71LCyB+HttxpUIKoxCoYwR+rvSxsxvU5XFkjw5Yxz8Q9H7djnKmm0d3H8F
-          hw9yxSMmbHRWTVdHoPYNvpE8H1I6ZuEU0H67cVURsJUmtazlx9n30thB+s9IsYQe
-          n5J3Fpc3a+z4ujAKdOSrTLG4L74k6SHAa0AZLDK2Znnnes3O//BD
-          -----END RSA PRIVATE KEY-----
-        known_hosts: |
-          |1|ef0Fnt1mn78Kb5oGnRHrE/V39Lg=|QOz74ObM8cEeMI6bUdD8DouLpMI= ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBIUizqxlKoWXZSZk8EREuFdyRxzeC/b/PikeWIsvEyNV1YBa3t//8GH5DRWcgzERLxYQ7qdqVu+7KZZ4AB4Pz+M=
-          1|aQtJGMG5eEJ2UZrY75/5aokMAWU=|qAWw810CuTKaBy3nrj1MA6b338c= ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCcW6Pawo2mPDmGMnhALN/mKtVGDNncczeeBuLmWznd2G98rTsymAqTgkcA/PN7FsVdhu/n0iV4WkwXWTkC8PhD0OR9X8RGPkHpF6rnv6gOgPMbuUlrglwQwr95FFZhxtCESFCzsTe4yW7h0sNIEskf0hmQwoDqVlgJulzdEwpK5tZy9AZ4mD8ooIT1who4fKVtMNs4m6sdxOIdl6KxmIGdHmOEGVz96TWotOHT1QwUOVfNQtJQstiFTZSIEONiDe//h+yTrcAlHJ66K1UI1svIuKLStF8Jo+dnXPcgxmE2MzKQh6KLkgRuCzOWfKKA1MwFQYWKjplvJi3dlK7kmOCOharlcla8/VGLc0Jv1XwjxZ6sj/ohghvU1ncwIdsJcdEF0ue2wBPG5Vygwg/3Vx92+lCzppZiA6cxXd1jFJPvwcd14UgRpo06jowAX2zztFvuP83SPjPa/GvpJZMyR17vE7Ckd7FB803/VtDPiQrxoBpeTOU00uZ7krFpr3Z1K3M=
-          |1|l+OeHcqMQHsXsE0SVnV6KOi5wBY=|pmrVu1evIu3Qz/o9DXJDlxZ5Hfs= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDqcIy+CykS4uZVoKt5sM7RneGrWFtx/cF02806DREyA
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
     - name: Deploy to VPS
       run: |
-        ssh azureuser@20.19.81.174 << 'EOF'
-          cd /home/azureuser/T-POO-700-PAR_23/time_manager
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd ${{ secrets.PROJECT_PATH }}
           git pull origin main
           docker compose down --volumes --remove-orphans
           docker compose up -d

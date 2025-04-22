@@ -20,7 +20,7 @@ config :time_manager, TimeManagerWeb.Endpoint,
     layout: false
   ],
   pubsub_server: TimeManager.PubSub,
-  live_view: [signing_salt: "ZB0Jny49"]
+  live_view: [signing_salt: System.get_env("SIGNING_SALT") || "placeholder_salt_replace_in_production"]
 
 # Configures the mailer
 #
@@ -31,7 +31,7 @@ config :time_manager, TimeManagerWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :time_manager, TimeManager.Mailer, adapter: Swoosh.Adapters.Local
 
-config :joken, default_signer: System.get_env("SECRET_KEY_BASE") || "une_longue_chaine"
+config :joken, default_signer: System.get_env("SECRET_KEY_BASE") || "placeholder_key_replace_in_production"
 
 # config :time_manager, jwt_secret: "super_secret_key"
 

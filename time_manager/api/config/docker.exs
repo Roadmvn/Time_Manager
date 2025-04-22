@@ -14,7 +14,7 @@ config :time_manager, TimeManagerWeb.Endpoint,
   check_origin: false,
   code_reloader: false,
   debug_errors: true,
-  secret_key_base: System.get_env("SECRET_KEY_BASE") || "une_longue_chaine_aleatoire_pour_le_developpement",
+  secret_key_base: System.get_env("SECRET_KEY_BASE") || "placeholder_key_replace_in_production",
   watchers: []
 
 config :logger, :console, format: "[$level] $message\n"

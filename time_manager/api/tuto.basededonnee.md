@@ -32,16 +32,16 @@ Avant de commencer à utiliser ta base de données avec Phoenix et PostgreSQL, t
 
    ```elixir
    config :time_manager, TimeManager.Repo,
-     username: "postgres",
-     password: "postgres",
+     username: "<votre_utilisateur>",
+     password: "<votre_mot_de_passe>",
      database: "time_manager_dev",
      hostname: "localhost",
      show_sensitive_data_on_connection_error: true,
      pool_size: 10
    ```
 
-   - **username** : Ton nom d'utilisateur PostgreSQL (souvent `postgres` par défaut).
-   - **password** : Ton mot de passe PostgreSQL (souvent `postgres` par défaut).
+   - **username** : Ton nom d'utilisateur PostgreSQL.
+   - **password** : Ton mot de passe PostgreSQL.
    - **database** : Le nom de la base de données à créer (ici `time_manager_dev`).
 
 2. **Créer la base de données** : Utilise la commande suivante pour initialiser la base de données PostgreSQL dans ton projet Phoenix.
@@ -80,8 +80,8 @@ Assurez-vous que le fichier `config/dev.exs` est configuré correctement avec le
 
 ```elixir
 config :time_manager, TimeManager.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "<votre_utilisateur>",
+  password: "<votre_mot_de_passe>",
   database: "time_manager_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,

@@ -24,22 +24,25 @@ time_manager/
 
 1. Créez un fichier `.env` à la racine du projet avec le contenu suivant :
 
-env
-PostgreSQL
-POSTGRES_DB=time_manager_dev
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-Backend
+```env
+# PostgreSQL
+POSTGRES_DB=<nom_de_votre_base_de_donnees>
+POSTGRES_USER=<votre_utilisateur>
+POSTGRES_PASSWORD=<votre_mot_de_passe>
+
+# Backend
 BACKEND_PORT=4000
-SECRET_KEY_BASE=your_secret_key_base_here
-Frontend
+SECRET_KEY_BASE=<votre_cle_secrete>
+SIGNING_SALT=<votre_sel_de_signature>
+
+# Frontend
 FRONTEND_PORT=8080
-General
+
+# General
 PROJECT_NAME=time_manager
+```
 
-
-
-Assurez-vous de remplacer `your_secret_key_base_here` par une clé secrète générée pour votre application Phoenix.
+Assurez-vous de remplacer les valeurs entre `<>` par vos propres informations sécurisées.
 
 2. Assurez-vous que les Dockerfiles et le script `init-db.sh` sont présents dans les dossiers appropriés.
 
